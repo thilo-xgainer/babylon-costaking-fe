@@ -82,3 +82,5 @@ export enum BaseStakingStep {
 
 export const MARKETPLACE_CONTRACT_ADDRESS =
   "bbn1r38w9kg337gu4t8ru9zlzmaugfuv08q7ja5wqnglvjk6epm3krus0mepeu";
+
+export const OREDER_CONTRACT_ADDRESS = "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3"

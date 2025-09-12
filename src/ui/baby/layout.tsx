@@ -20,6 +20,7 @@ import { RewardsPreviewModal } from "./components/RewardPreviewModal";
 import { useEpochPolling } from "./hooks/api/useEpochPolling";
 import { PendingOperationsProvider } from "./hooks/services/usePendingOperationsService";
 import StakingForm from "./widgets/StakingForm";
+import { Redeem } from "./components/RedeemCard";
 
 type TabId = "stake" | "activity" | "rewards" | "faqs";
 
@@ -92,6 +93,11 @@ function BabyLayoutContent() {
       label: "FAQs",
       content: <FAQ variant="baby" />,
     },
+    {
+      id: "redeem",
+      label: "Redeem",
+      content: <Redeem />,
+    }
   ];
 
   const fallbackTabItems = [
