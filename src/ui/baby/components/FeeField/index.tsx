@@ -15,7 +15,6 @@ import { calculateTokenValueInCurrency } from "@/ui/common/utils/formatCurrency"
 const DELAY = 500;
 
 interface FormFields {
-  validatorAddress: string;
   amount: number;
 }
 
@@ -34,15 +33,14 @@ export function FeeField({ babyPrice = 0, calculateFee }: FeeFieldProps) {
   const { trigger } = useFormContext();
   const { bech32Address } = useCosmosWallet();
   const values = useWatch({ name: ["amount", "validatorAddresses"] });
-  const [amount, validatorAddresses] = useDebounce(values, DELAY);
-  const validatorAddress = validatorAddresses?.[0];
+  const [amount] = useDebounce(values, DELAY);
   const babyValue = babylon.utils.ubbnToBaby(BigInt(value));
 
   useEffect(() => {
     const calculate = async () => {
       const valid = await trigger();
       if (valid && bech32Address) {
-        onChange(await calculateFee({ amount, validatorAddress }));
+        onChange(await calculateFee({ amount }));
       } else {
         onChange(0);
       }
@@ -50,15 +48,7 @@ export function FeeField({ babyPrice = 0, calculateFee }: FeeFieldProps) {
     };
 
     calculate();
-  }, [
-    bech32Address,
-    amount,
-    validatorAddress,
-    calculateFee,
-    trigger,
-    onChange,
-    onBlur,
-  ]);
+  }, [bech32Address, amount, calculateFee, trigger, onChange, onBlur]);
 
   return (
     <FeesSection

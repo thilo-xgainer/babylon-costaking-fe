@@ -213,6 +213,7 @@ export function useStakingService() {
       handleError,
       reset,
       refetchDelegations,
+      validators,
       publicKeyNoCoord,
       btcAddress,
       bech32Address,
