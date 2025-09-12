@@ -12,25 +12,33 @@ export const Redeem = () => {
   const { sendBbnTx, signBbnTx } = useBbnTransaction();
   const { bech32Address } = useCosmosWallet();
 
-    const handleRedeem = async () => {
-        const createOrderMsg: MsgExecuteContractEncodeObject = {
-            typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: {
-              sender: bech32Address,
-              contract: OREDER_CONTRACT_ADDRESS,
-              msg: toUtf8(
-                JSON.stringify({
-                    un_stake: {
-                    amount: babyToUbbn(Number(amount)),
-                  },
-                }),
-              ),
-              funds: [],
-            },
-          };
-  
-          const res = await sendBbnTx(await signBbnTx(createOrderMsg));
+  const handleRedeem = async () => {
+    try {
+        console.log("bech32Address: ",bech32Address, amount);
+        
+      const redeemBabyMsg: MsgExecuteContractEncodeObject = {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: {
+          sender: bech32Address,
+          contract:
+            "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+          msg: toUtf8(
+            JSON.stringify({
+              un_stake: {
+                amount: babyToUbbn(Number(amount)).toString()
+              },
+            }),
+          ),
+          funds: []
+        },
+      }
+
+      const res = await sendBbnTx(await signBbnTx(redeemBabyMsg));
+      console.log("res: ", res);
+    } catch (error) {
+      console.log("error: ", error);
     }
+  };
 
   return (
     <div>
@@ -53,7 +61,10 @@ export const Redeem = () => {
           />
         </div>
       </div>
-      <button className="mt-5 w-full bg-[#f0f0f0] p-4 text-center">
+      <button
+        className="mt-5 w-full bg-[#f0f0f0] p-4 text-center hover:opacity-75"
+        onClick={handleRedeem}
+      >
         Redeem tBABY
       </button>
     </div>
