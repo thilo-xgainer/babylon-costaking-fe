@@ -1,8 +1,9 @@
 import { type PropsWithChildren, useCallback, useMemo, useState } from "react";
-import { array, number, object, ObjectSchema, ObjectShape, string } from "yup";
+import { number, object, ObjectSchema, ObjectShape } from "yup";
+import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
+import { toUtf8 } from "@cosmjs/encoding";
 
 import babylon from "@/infrastructure/babylon";
-import { useDelegationService } from "@/ui/baby/hooks/services/useDelegationService";
 import { useValidatorService } from "@/ui/baby/hooks/services/useValidatorService";
 import { useWalletService } from "@/ui/baby/hooks/services/useWalletService";
 import { validateDecimalPoints } from "@/ui/common/components/Staking/Form/validation/validation";
@@ -21,13 +22,14 @@ import {
 } from "@/ui/common/utils/formTransforms";
 import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { GEO_BLOCK_MESSAGE } from "@/ui/common/types/services/healthCheck";
+import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
+import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 
 import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
 
 const MIN_STAKING_AMOUNT = 0.01;
 
 export interface FormData {
-  validatorAddress: string;
   amount: number;
   feeAmount: number;
 }
@@ -35,11 +37,6 @@ export interface FormData {
 interface PreviewData {
   amount: number;
   feeAmount: number;
-  validator: {
-    address: string;
-    name: string;
-    url?: string;
-  };
 }
 
 interface Step<K extends string, D = never> {
@@ -91,11 +88,12 @@ const { StateProvider, useState: useStakingState } =
 function StakingState({ children }: PropsWithChildren) {
   const [step, setStep] = useState<StakingStep>({ name: "initial" });
 
-  const { stake, sendTx, estimateStakingFee } = useDelegationService();
-  const { validatorMap, loading } = useValidatorService();
+  const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
+  const { loading } = useValidatorService();
   const { isGeoBlocked } = useHealthCheck();
   const { balance } = useWalletService();
   const { handleError } = useError();
+  const { bech32Address } = useCosmosWallet();
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
 
@@ -148,13 +146,6 @@ function StakingState({ children }: PropsWithChildren) {
             ),
         },
         {
-          field: "validatorAddresses",
-          schema: array()
-            .of(string())
-            .required("Add Validator")
-            .min(1, "Add Validator"),
-        },
-        {
           field: "feeAmount",
           schema: number()
             .transform(formatNumber)
@@ -188,26 +179,43 @@ function StakingState({ children }: PropsWithChildren) {
     [fieldSchemas],
   );
 
-  const showPreview = useCallback(
-    ({ amount, feeAmount, validatorAddress }: FormData) => {
-      const validator = validatorMap[validatorAddress];
-      const formData: PreviewData = {
-        amount,
-        feeAmount,
-        validator: {
-          address: validator.address,
-          name: validator.name,
-          url: "",
-        },
-      };
-      setStep({ name: "preview", data: formData });
-    },
-    [validatorMap],
-  );
+  const showPreview = useCallback(({ amount, feeAmount }: FormData) => {
+    const formData: PreviewData = {
+      amount,
+      feeAmount,
+    };
+    setStep({ name: "preview", data: formData });
+  }, []);
 
   const closePreview = useCallback(() => {
     setStep({ name: "initial" });
   }, []);
+
+  const createStakeMsg = useCallback(
+    (amount: number) => {
+      const msg: MsgExecuteContractEncodeObject = {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: {
+          sender: bech32Address,
+          contract:
+            "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+          msg: toUtf8(
+            JSON.stringify({
+              stake: {},
+            }),
+          ),
+          funds: [
+            {
+              denom: "ubbn",
+              amount: amount.toString(),
+            },
+          ],
+        },
+      };
+      return msg;
+    },
+    [bech32Address],
+  );
 
   const submitForm = useCallback(async () => {
     if (step.name !== "preview" || !step.data) return;
@@ -215,41 +223,37 @@ function StakingState({ children }: PropsWithChildren) {
     try {
       setStep({ name: "signing" });
       const amount = step.data.amount;
-      const validatorAddress = step.data.validator.address;
-      const { signedTx } = await stake({
-        amount,
-        validatorAddress,
-      });
+      const msg = createStakeMsg(amount);
 
       setStep({ name: "loading" });
-      const result = await sendTx(
-        signedTx,
-        "stake",
-        validatorAddress,
-        BigInt(amount),
-      );
+      const result = await sendBbnTx(await signBbnTx(msg));
       logger.info("Baby Staking: Stake", {
-        txHash: result?.txHash,
+        txHash: result?.transactionHash,
       });
-      setStep({ name: "success", data: { txHash: result?.txHash } });
+      setStep({ name: "success", data: { txHash: result?.transactionHash } });
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
       setStep({ name: "initial" });
     }
-  }, [step, logger, stake, handleError, sendTx]);
+  }, [step, logger, handleError, sendBbnTx, signBbnTx, createStakeMsg]);
 
   const calculateFee = useCallback(
-    async ({ validatorAddress, amount }: Omit<FormData, "feeAmount">) => {
+    async ({ amount }: Omit<FormData, "feeAmount">) => {
       try {
-        return estimateStakingFee({ validatorAddress, amount });
+        const msg = createStakeMsg(amount * 1e6);
+        const result = await estimateBbnGasFee(msg);
+        return result.amount.reduce(
+          (sum, { amount }) => sum + Number(amount),
+          0,
+        );
       } catch (error: any) {
         handleError({ error });
         logger.error(error);
         return 0;
       }
     },
-    [estimateStakingFee, handleError, logger],
+    [handleError, logger, estimateBbnGasFee, createStakeMsg],
   );
 
   const resetForm = useCallback(() => {

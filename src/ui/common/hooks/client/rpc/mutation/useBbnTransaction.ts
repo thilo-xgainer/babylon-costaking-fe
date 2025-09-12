@@ -55,49 +55,6 @@ export const useBbnTransaction = () => {
         txs: msg,
       });
 
-      // console.log({
-      //   fp_btc_pk_list: [
-      //     Array.from(msg.value.fpBtcPkList[0])
-      //       .map((el) => el.toString(16).padStart(2, "0"))
-      //       .join(""),
-      //   ],
-      //   staker_addr:
-      //     "bbn1szhhevmwddnzdssvd4kgj7ucfpkkkdqqrcnvw06x2x08fjupgccs0w3f9m",
-      //   pop: {
-      //     btc_sig_type: "BIP322",
-      //     btc_sig: Array.from(msg.value.pop.btcSig)
-      //       .map((el) => el.toString(16).padStart(2, "0"))
-      //       .join(""),
-      //   },
-      //   btc_pk: Array.from(msg.value.btcPk)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   staking_time: 64000,
-      //   staking_value: 57000,
-      //   staking_tx: Array.from(msg.value.stakingTx)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   slashing_tx: Array.from(msg.value.slashingTx)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   delegator_slashing_sig: Array.from(msg.value.delegatorSlashingSig)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   unbonding_time: 301,
-      //   unbonding_tx: Array.from(msg.value.unbondingTx)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   unbonding_value: 54000,
-      //   unbonding_slashing_tx: Array.from(msg.value.unbondingSlashingTx)
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      //   delegator_unbonding_slashing_sig: Array.from(
-      //     msg.value.delegatorUnbondingSlashingSig,
-      //   )
-      //     .map((el) => el.toString(16).padStart(2, "0"))
-      //     .join(""),
-      // });
-
       const fee = await estimateBbnGasFee(msg);
       return signTx(msg, fee);
     },

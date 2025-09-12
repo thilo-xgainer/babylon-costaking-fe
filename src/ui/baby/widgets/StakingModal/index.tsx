@@ -1,7 +1,6 @@
 import { PreviewModal, useFormContext } from "@babylonlabs-io/core-ui";
 
 import babylon from "@/infrastructure/babylon";
-import { ValidatorAvatar } from "@/ui/baby/components/ValidatorAvatar";
 import { getNetworkConfigBBN } from "@/ui/common/config/network/bbn";
 import { DEFAULT_CONFIRMATION_DEPTH } from "@/ui/common/constants";
 import { useNetworkInfo } from "@/ui/common/hooks/client/api/useNetworkInfo";
@@ -31,19 +30,7 @@ export function StakingModal() {
         <PreviewModal
           open
           processing={false}
-          bsns={[
-            {
-              icon: (
-                <ValidatorAvatar
-                  url={step.data.validator.url}
-                  name={step.data.validator.name}
-                  variant="rounded"
-                  size="tiny"
-                />
-              ),
-              name: step.data.validator.name,
-            },
-          ]}
+          bsns={[]}
           finalityProviders={[]}
           details={{
             stakeAmount: `${maxDecimals(
