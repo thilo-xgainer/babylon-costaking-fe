@@ -1,0 +1,21 @@
+// TODO: Below config is not in use yet.
+// This is a placeholder for future code refactoring purposes.
+export default {
+  api: {
+    baseUrl:
+      process.env.REACT_APP_API_URL ??
+      "https://staking-api.phase-2-devnet.babylonlabs.io",
+  },
+  bitcoin: {
+    url: process.env.REACT_APP_MEMPOOL_API ?? "https://mempool.space",
+    network: process.env.REACT_APP_NETWORK ?? "signet",
+  },
+  babylon: {
+    lcdUrl:
+      process.env.REACT_APP_BABY_LCD_URL ??
+      "https://lcd.devnet.babylonlabs.io",
+    rpcUrl:
+      process.env.REACT_APP_BABY_RPC_URL ??
+      "https://rpc-dapp.devnet.babylonlabs.io/",
+  },
+} satisfies Infra.Config;
