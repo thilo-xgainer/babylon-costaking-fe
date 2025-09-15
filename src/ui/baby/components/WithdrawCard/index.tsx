@@ -1,4 +1,3 @@
-
 import tbabyLogo from "@/ui/common/assets/baby.png";
 import { useWithdrawState } from "@/ui/baby/state/WithdrawState";
 import { ubbnToBaby } from "@/ui/common/utils/bbn";
@@ -6,7 +5,7 @@ import { timeRemaining } from "@/utils/format";
 import { ClockIcon } from "@/ui/icons/ClockIcon";
 
 export const WithdrawCard = () => {
-  const {redeemRequest, withdrawalAmount} = useWithdrawState()
+  const { redeemRequest, withdrawalAmount, submitForm } = useWithdrawState();
 
   return (
     <div>
@@ -22,7 +21,10 @@ export const WithdrawCard = () => {
                   <p>BABY</p>
                 </div>
               </div>
-              <button className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75">
+              <button
+                className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75"
+                onClick={submitForm}
+              >
                 Withdraw
               </button>
             </div>

@@ -149,7 +149,7 @@ function WithdrawState({ children }: PropsWithChildren) {
   }, [bech32Address, withdrawalAmount]);
 
   const submitForm = useCallback(async () => {
-    if (step.name !== "preview" || !step.data) return;
+    // if (step.name !== "preview" || !step.data) return;
 
     try {
       setStep({ name: "signing" });
@@ -161,6 +161,7 @@ function WithdrawState({ children }: PropsWithChildren) {
         txHash: result?.transactionHash,
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
+      await refetchRedeemRequest()
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
