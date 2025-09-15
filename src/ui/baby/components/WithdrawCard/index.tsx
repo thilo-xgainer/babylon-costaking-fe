@@ -3,16 +3,14 @@ import { useWithdrawState } from "@/ui/baby/state/WithdrawState";
 import { ubbnToBaby } from "@/ui/common/utils/bbn";
 import { timeRemaining } from "@/utils/format";
 import { ClockIcon } from "@/ui/icons/ClockIcon";
+import { WithdrawModal } from "../WithdrawModal";
 
 export const WithdrawCard = () => {
-  const { redeemRequest, withdrawalAmount, submitForm } = useWithdrawState();
-  console.log("redeemRequest: ",redeemRequest);
-  redeemRequest?.forEach((item) => {
-    console.log( item.unlock_at,timeRemaining(item.unlock_at));
-    
-  })
+  const { redeemRequest, withdrawalAmount,  showPreview } = useWithdrawState();
   
-
+  const handlePreview = () => {
+    showPreview();
+  };
   return (
     <div>
       <div className="bg-[#F9F9F9] p-4">
@@ -27,9 +25,10 @@ export const WithdrawCard = () => {
                   <p>BABY</p>
                 </div>
               </div>
+              <WithdrawModal/>
               <button
                 className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75"
-                onClick={submitForm}
+                onClick={handlePreview}
               >
                 Withdraw
               </button>
