@@ -1,12 +1,12 @@
-import { incentivetx } from "@babylonlabs-io/babylon-proto-ts";
 import { useCallback } from "react";
+import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
+import { toUtf8 } from "@cosmjs/encoding";
 
 import { ONE_SECOND } from "@/ui/common/constants";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { useLogger } from "@/ui/common/hooks/useLogger";
 import { useRewardsState } from "@/ui/common/state/RewardState";
 import { retry } from "@/ui/common/utils";
-import { BBN_REGISTRY_TYPE_URLS } from "@/ui/common/utils/wallet/bbnRegistry";
 
 import { useBbnTransaction } from "../client/rpc/mutation/useBbnTransaction";
 import { useBbnQuery } from "../client/rpc/queries/useBbnQuery";
@@ -78,8 +78,8 @@ export const useRewardsService = () => {
       const signedTx = await signBbnTx(msg);
       const result = await sendBbnTx(signedTx);
 
-      if (result?.txHash) {
-        setTransactionHash(result.txHash);
+      if (result?.transactionHash) {
+        setTransactionHash(result.transactionHash);
       }
 
       await refetchRewardBalance();
@@ -122,13 +122,19 @@ export const useRewardsService = () => {
 };
 
 const createWithdrawRewardMsg = (bech32Address: string) => {
-  const withdrawRewardMsg = incentivetx.MsgWithdrawReward.fromPartial({
-    type: "btc_staker",
-    address: bech32Address,
-  });
-
-  return {
-    typeUrl: BBN_REGISTRY_TYPE_URLS.MsgWithdrawReward,
-    value: withdrawRewardMsg,
+  const msg: MsgExecuteContractEncodeObject = {
+    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+    value: {
+      sender: bech32Address,
+      contract:
+        "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+      msg: toUtf8(
+        JSON.stringify({
+          claim_btc_reward: {},
+        }),
+      ),
+      funds: [],
+    },
   };
+  return msg;
 };

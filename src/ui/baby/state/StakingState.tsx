@@ -14,6 +14,7 @@ import { MultistakingFormFields } from "@/ui/common/state/MultistakingState";
 import {
   createBalanceValidator,
   createMinAmountValidator,
+  babyToUbbn,
 } from "@/ui/common/utils/bbn";
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import {
@@ -241,7 +242,7 @@ function StakingState({ children }: PropsWithChildren) {
   const calculateFee = useCallback(
     async ({ amount }: Omit<FormData, "feeAmount">) => {
       try {
-        const msg = createStakeMsg(amount * 1e6);
+        const msg = createStakeMsg(babyToUbbn(amount));
         const result = await estimateBbnGasFee(msg);
         return result.amount.reduce(
           (sum, { amount }) => sum + Number(amount),

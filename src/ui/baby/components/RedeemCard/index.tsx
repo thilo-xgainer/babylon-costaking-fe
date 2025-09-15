@@ -5,12 +5,27 @@ import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
 import { useBbnTransaction } from "../../../common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { babyToUbbn } from "../../../common/utils/bbn";
+import { babyToUbbn,ubbnToBaby } from "../../../common/utils/bbn";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 export const Redeem = () => {
   const [amount, setAmount] = useState<string>();
   const { sendBbnTx, signBbnTx } = useBbnTransaction();
   const { bech32Address } = useCosmosWallet();
+  const {
+    data: stakedAmount ,
+    isLoading: isStakedAmountLoading,
+    refetch: refetchStakedAmount,
+  } = useCosmwasmQuery({
+    contractAddress:
+      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+    queryMsg: {
+      get_user_staked: {
+        user: bech32Address
+      },
+    },
+  });
+  
 
   const handleRedeem = async () => {
     try {
@@ -44,7 +59,7 @@ export const Redeem = () => {
     <div>
       <div className="bg-[#F9F9F9] p-4">
         <div className="mb-4">
-          <p>Order: {OREDER_CONTRACT_ADDRESS}</p>
+          <p>Staked amount: {ubbnToBaby(Number(stakedAmount))}</p>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

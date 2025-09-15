@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState, type PropsWithChildren } from "react";
 
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 interface RewardsStateProps {
   loading: boolean;
@@ -55,12 +55,16 @@ export function RewardsState({ children }: PropsWithChildren) {
   const { bech32Address: bbnAddress } = useCosmosWallet();
 
   const {
-    rewardsQuery: {
-      data: rewardBalance = 0,
-      isLoading: isRewardBalanceLoading,
-      refetch: refetchRewardBalance,
+    data: rewardBalance = 0,
+    isLoading: isRewardBalanceLoading,
+    refetch: refetchRewardBalance,
+  } = useCosmwasmQuery({
+    contractAddress:
+      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+    queryMsg: {
+      get_btc_reward: {},
     },
-  } = useBbnQuery();
+  });
 
   const openRewardModal = useCallback(() => {
     setRewardModal(true);
