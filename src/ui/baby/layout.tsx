@@ -21,6 +21,7 @@ import { useEpochPolling } from "./hooks/api/useEpochPolling";
 import { PendingOperationsProvider } from "./hooks/services/usePendingOperationsService";
 import StakingForm from "./widgets/StakingForm";
 import { Redeem } from "./components/RedeemCard";
+import { WithdrawCard } from "./components/WithdrawCard";
 
 type TabId = "stake" | "activity" | "rewards" | "faqs";
 
@@ -97,6 +98,11 @@ function BabyLayoutContent() {
       id: "redeem",
       label: "Redeem",
       content: <Redeem />,
+    },
+    {
+      id: "withdraw",
+      label: "Withdraw",
+      content: <WithdrawCard />,
     }
   ];
 

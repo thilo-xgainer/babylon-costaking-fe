@@ -14,7 +14,7 @@ export const Redeem = () => {
 
   const handleRedeem = async () => {
     try {
-        console.log("bech32Address: ",bech32Address, amount);
+        console.log("bech32Address: ",bech32Address, amount, babyToUbbn(Number(amount)).toString());
         
       const redeemBabyMsg: MsgExecuteContractEncodeObject = {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
