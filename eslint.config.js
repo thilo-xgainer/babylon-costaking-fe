@@ -81,8 +81,11 @@ export default tseslint.config(
   eslintPluginPrettierRecommended,
   {
     settings: {
-      "import/resolver": {
-        typescript: true,
+      "import-x/resolver": {
+        typescript: {
+          alwaysTryTypes: true,
+          project: "./tsconfig.lib.json",
+        },
       },
     },
   },
