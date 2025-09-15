@@ -1,9 +1,9 @@
 
-import tbabyLogo from "../../../common/assets/baby.png";
-import { ubbnToBaby } from "../../../common/utils/bbn";
-import { timeRemaining } from "../../../../utils/format";
-import { ClockIcon } from "../../../icon/ClockIcon";
-import { useWithdrawState } from "../../state/WithdrawState";
+import tbabyLogo from "@/ui/common/assets/baby.png";
+import { useWithdrawState } from "@/ui/baby/state/WithdrawState";
+import { ubbnToBaby } from "@/ui/common/utils/bbn";
+import { timeRemaining } from "@/utils/format";
+import { ClockIcon } from "@/ui/icons/ClockIcon";
 
 export const WithdrawCard = () => {
   const {redeemRequest, withdrawalAmount} = useWithdrawState()
