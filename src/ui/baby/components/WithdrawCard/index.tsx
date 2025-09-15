@@ -1,12 +1,17 @@
-
-import tbabyLogo from "../../../common/assets/baby.png";
-import { ubbnToBaby } from "../../../common/utils/bbn";
-import { timeRemaining } from "../../../../utils/format";
-import { ClockIcon } from "../../../icon/ClockIcon";
-import { useWithdrawState } from "../../state/WithdrawState";
+import tbabyLogo from "@/ui/common/assets/baby.png";
+import { useWithdrawState } from "@/ui/baby/state/WithdrawState";
+import { ubbnToBaby } from "@/ui/common/utils/bbn";
+import { timeRemaining } from "@/utils/format";
+import { ClockIcon } from "@/ui/icons/ClockIcon";
 
 export const WithdrawCard = () => {
-  const {redeemRequest, withdrawalAmount} = useWithdrawState()
+  const { redeemRequest, withdrawalAmount, submitForm } = useWithdrawState();
+  console.log("redeemRequest: ",redeemRequest);
+  redeemRequest?.forEach((item) => {
+    console.log( item.unlock_at,timeRemaining(item.unlock_at));
+    
+  })
+  
 
   return (
     <div>
@@ -22,12 +27,15 @@ export const WithdrawCard = () => {
                   <p>BABY</p>
                 </div>
               </div>
-              <button className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75">
+              <button
+                className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75"
+                onClick={submitForm}
+              >
                 Withdraw
               </button>
             </div>
           )}
-          {redeemRequest?.map((request, index) => (
+          {redeemRequest?.filter(request => request.unlock_at > (new Date()).getTime() /1000).map((request, index) => (
             <div
               key={index}
               className="flex w-1/2 items-center justify-between bg-[#1b5f79] px-6 py-3"
