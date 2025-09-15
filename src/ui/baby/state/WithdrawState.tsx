@@ -8,7 +8,6 @@ import {
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
 
-import babylon from "@/infrastructure/babylon";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { usePrice } from "@/ui/common/hooks/client/api/usePrices";
 import { useLogger } from "@/ui/common/hooks/useLogger";
@@ -88,7 +87,6 @@ function WithdrawState({ children }: PropsWithChildren) {
   const babyPrice = usePrice("BABY");
   const {
     data: redeemRequest,
-    isLoading: isRedeemRequestLoading,
     refetch: refetchRedeemRequest,
   } = useCosmwasmQuery<PendingRequest[]>({
     contractAddress:
@@ -101,7 +99,6 @@ function WithdrawState({ children }: PropsWithChildren) {
   });
   const {
     data: withdrawalAmount,
-    isLoading: isWirhdrawalAmountLoading,
     refetch: refetcWithdrawlAmount,
   } = useCosmwasmQuery<number>({
     contractAddress:

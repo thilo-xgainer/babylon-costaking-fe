@@ -94,9 +94,7 @@ function RedeemState({ children }: PropsWithChildren) {
   const { bech32Address } = useCosmosWallet();
   const {
     data: stakedAmount ,
-    isLoading,
     refetch: refetchStakedAmount,
-    error
   } = useCosmwasmQuery({
     contractAddress:
       "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",

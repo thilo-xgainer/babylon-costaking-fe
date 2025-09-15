@@ -1,16 +1,9 @@
 
 import tbabyLogo from "../../../common/assets/baby.png";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 import { ubbnToBaby } from "../../../common/utils/bbn";
 import { timeRemaining } from "../../../../utils/format";
 import { ClockIcon } from "../../../icon/ClockIcon";
 import { useWithdrawState } from "../../state/WithdrawState";
-
-type PendingRequest = {
-  amount: string;
-  unlock_at: number;
-};
 
 export const WithdrawCard = () => {
   const {redeemRequest, withdrawalAmount} = useWithdrawState()
