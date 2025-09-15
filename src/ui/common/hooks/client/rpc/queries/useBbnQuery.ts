@@ -8,7 +8,7 @@ import {
   setupBankExtension,
 } from "@cosmjs/stargate";
 
-import { ONE_MINUTE, ONE_SECOND } from "@/ui/common/constants";
+import { ONE_MINUTE, ONE_SECOND, ORDER_ADDRESS } from "@/ui/common/constants";
 import { useBbnRpc } from "@/ui/common/context/rpc/BbnRpcProvider";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { ClientError } from "@/ui/common/errors";
@@ -39,7 +39,7 @@ export const useBbnQuery = () => {
    * @returns {Promise<number>} - The rewards from the user's account.
    */
   const rewardsQuery = useClientQuery({
-    queryKey: [BBN_REWARDS_KEY, bech32Address, connected],
+    queryKey: [BBN_REWARDS_KEY, ORDER_ADDRESS, connected],
     queryFn: async () => {
       if (!connected || !queryClient || !bech32Address) {
         return undefined;
@@ -47,7 +47,7 @@ export const useBbnQuery = () => {
       const { incentive } = setupIncentiveExtension(queryClient);
       const req: incentivequery.QueryRewardGaugesRequest =
         incentivequery.QueryRewardGaugesRequest.fromPartial({
-          address: bech32Address,
+          address: ORDER_ADDRESS,
         });
 
       let rewards: incentivequery.QueryRewardGaugesResponse;

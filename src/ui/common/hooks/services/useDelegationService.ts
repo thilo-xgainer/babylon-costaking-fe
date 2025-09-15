@@ -46,7 +46,7 @@ interface TxProps {
 
 type DelegationCommand = (props: TxProps) => Promise<void>;
 
-interface ConfirmationModalState {
+export interface ConfirmationModalState {
   action: ActionType;
   delegation: DelegationWithFP;
   param: BbnStakingParamsVersion;

@@ -3,6 +3,8 @@ import { useCallback, useMemo, useState, type PropsWithChildren } from "react";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
+import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";
+import { ORDER_ADDRESS } from "@/ui/common/constants";
 
 interface RewardsStateProps {
   loading: boolean;
@@ -59,12 +61,19 @@ export function RewardsState({ children }: PropsWithChildren) {
     isLoading: isRewardBalanceLoading,
     refetch: refetchRewardBalance,
   } = useCosmwasmQuery({
-    contractAddress:
-      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+    contractAddress: ORDER_ADDRESS,
     queryMsg: {
       get_btc_reward: {},
     },
   });
+
+  const {
+    rewardsQuery: {
+      data: pendingReward = 0,
+      isLoading: isPendingRewardLoading,
+      refetch: refetchPendingReward,
+    },
+  } = useBbnQuery();
 
   const openRewardModal = useCallback(() => {
     setRewardModal(true);
@@ -84,12 +93,12 @@ export function RewardsState({ children }: PropsWithChildren) {
 
   const context = useMemo(
     () => ({
-      loading: isRewardBalanceLoading,
+      loading: isRewardBalanceLoading || isPendingRewardLoading,
       showRewardModal,
       showProcessingModal,
       processing,
       bbnAddress,
-      rewardBalance,
+      rewardBalance: rewardBalance + pendingReward,
       transactionFee,
       transactionHash,
       setTransactionHash,
@@ -100,7 +109,7 @@ export function RewardsState({ children }: PropsWithChildren) {
       openProcessingModal,
       closeProcessingModal,
       refetchRewardBalance: async () => {
-        await refetchRewardBalance();
+        await Promise.all([refetchRewardBalance(), refetchPendingReward()]);
       },
     }),
     [
@@ -117,6 +126,9 @@ export function RewardsState({ children }: PropsWithChildren) {
       openRewardModal,
       closeRewardModal,
       refetchRewardBalance,
+      pendingReward,
+      isPendingRewardLoading,
+      refetchPendingReward,
     ],
   );
 

@@ -111,7 +111,6 @@ export const useTransactionService = () => {
     },
     [
       availableUTXOs,
-      bech32Address,
       createCustomBtcStakingManager,
       stakerInfo,
       tipHeight,

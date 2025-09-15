@@ -2,14 +2,13 @@ import { useCallback } from "react";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
 
-import { ONE_SECOND } from "@/ui/common/constants";
+import { ONE_SECOND, ORDER_ADDRESS } from "@/ui/common/constants";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { useLogger } from "@/ui/common/hooks/useLogger";
 import { useRewardsState } from "@/ui/common/state/RewardState";
 import { retry } from "@/ui/common/utils";
-
-import { useBbnTransaction } from "../client/rpc/mutation/useBbnTransaction";
-import { useBbnQuery } from "../client/rpc/queries/useBbnQuery";
+import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
+import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";
 
 const MAX_RETRY_ATTEMPTS = 3;
 
@@ -126,8 +125,7 @@ const createWithdrawRewardMsg = (bech32Address: string) => {
     typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
     value: {
       sender: bech32Address,
-      contract:
-        "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+      contract: ORDER_ADDRESS,
       msg: toUtf8(
         JSON.stringify({
           claim_btc_reward: {},

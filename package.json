@@ -15,7 +15,7 @@
     "sort-imports": "eslint --fix ."
   },
   "engines": {
-    "node": "24.2.0"
+    "node": "22.x"
   },
   "dependencies": {
     "@babylonlabs-io/babylon-proto-ts": "*",
