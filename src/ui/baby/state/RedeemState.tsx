@@ -1,18 +1,15 @@
-import { type PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { type PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { number, object, ObjectSchema, ObjectShape } from "yup";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
 
 import babylon from "@/infrastructure/babylon";
-import { useValidatorService } from "@/ui/baby/hooks/services/useValidatorService";
-import { useWalletService } from "@/ui/baby/hooks/services/useWalletService";
 import { validateDecimalPoints } from "@/ui/common/components/Staking/Form/validation/validation";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { usePrice } from "@/ui/common/hooks/client/api/usePrices";
 import { useLogger } from "@/ui/common/hooks/useLogger";
 import { MultistakingFormFields } from "@/ui/common/state/MultistakingState";
 import {
-  createBalanceValidator,
   createMinAmountValidator,
   babyToUbbn,
 } from "@/ui/common/utils/bbn";
@@ -25,9 +22,8 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { GEO_BLOCK_MESSAGE } from "@/ui/common/types/services/healthCheck";
 import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { ORDER_ADDRESS } from "@/ui/common/constants";
 
-import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 const MIN_STAKING_AMOUNT = 0.01;
 
@@ -46,20 +42,21 @@ interface Step<K extends string, D = never> {
   data?: D;
 }
 
-type StakingStep =
+type RedeemStep =
   | Step<"initial">
   | Step<"preview", PreviewData>
   | Step<"signing">
   | Step<"loading">
   | Step<"success", { txHash: string }>;
 
-interface StakingState {
-  loading: boolean;
+interface RedeemState {
+//   loading: boolean;
   formSchema: any;
-  step: StakingStep;
+  step: RedeemStep;
   availableBalance: number;
   babyPrice: number;
   fields: string[];
+  exchangeRate: number
   showPreview(data: FormData): void;
   closePreview(): void;
   submitForm(): Promise<void>;
@@ -71,14 +68,15 @@ interface StakingState {
   };
 }
 
-const { StateProvider, useState: useStakingState } =
-  createStateUtils<StakingState>({
-    loading: true,
+const { StateProvider, useState: useRedeemState } =
+  createStateUtils<RedeemState>({
+    // loading: true,
     formSchema: null,
     step: { name: "initial" },
     availableBalance: 0,
     babyPrice: 0,
     fields: [],
+    exchangeRate: 0,
     calculateFee: async () => 0,
     showPreview: () => {},
     closePreview: () => {},
@@ -87,15 +85,36 @@ const { StateProvider, useState: useStakingState } =
     disabled: undefined,
   });
 
-function StakingState({ children }: PropsWithChildren) {
-  const [step, setStep] = useState<StakingStep>({ name: "initial" });
+function RedeemState({ children }: PropsWithChildren) {
+  const [step, setStep] = useState<RedeemStep>({ name: "initial" });
 
   const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
-  const { loading } = useValidatorService();
   const { isGeoBlocked } = useHealthCheck();
-  const { balance } = useWalletService();
   const { handleError } = useError();
   const { bech32Address } = useCosmosWallet();
+  const {
+    data: stakedAmount ,
+    refetch: refetchStakedAmount,
+  } = useCosmwasmQuery({
+    contractAddress:
+      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+    queryMsg: {
+      get_user_staked: {
+        user: bech32Address
+      },
+    },
+  });
+  const {
+    data: exchangeRate ,
+  } = useCosmwasmQuery({
+    contractAddress:
+      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+    queryMsg: {
+        get_exchange_rate: {
+      },
+    },
+  });
+  
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
 
@@ -104,13 +123,8 @@ function StakingState({ children }: PropsWithChildren) {
     [],
   );
   // Subtract the pending stake amount from the balance
-  const { getTotalPendingStake } = usePendingOperationsService();
-  const availableBalance = balance - getTotalPendingStake();
+  const availableBalance = stakedAmount;
 
-  const balanceValidator = useMemo(
-    () => createBalanceValidator(availableBalance),
-    [availableBalance],
-  );
 
   const isDisabled = useMemo(() => {
     if (isGeoBlocked) {
@@ -128,22 +142,18 @@ function StakingState({ children }: PropsWithChildren) {
           field: "amount",
           schema: number()
             .transform(formatBabyStakingAmount)
-            .typeError("Staking amount must be a valid number")
-            .required("Enter BABY Amount to Stake")
-            .moreThan(0, "Staking amount must be greater than 0")
+            .typeError("Redeem amount must be a valid number")
+            .required("Enter BABY Amount to Redeem")
+            .moreThan(0, "Redeem amount must be greater than 0")
+            .lessThan(stakedAmount, "Redeem amount must be less than staked amount")
             .test(
               "invalidMinAmount",
-              `Minimum staking amount is ${MIN_STAKING_AMOUNT} BABY`,
+              `Minimum redeem amount is ${MIN_STAKING_AMOUNT} BABY`,
               (_, context) => minAmountValidator(context.originalValue),
             )
             .test(
-              "invalidBalance",
-              "Staking Amount Exceeds Available Balance",
-              (_, context) => balanceValidator(context.originalValue),
-            )
-            .test(
               "invalidFormat",
-              "Staking amount must have no more than 6 decimal points",
+              "Redeem amount must have no more than 6 decimal points",
               (_, context) => validateDecimalPoints(context.originalValue, 6),
             ),
         },
@@ -162,7 +172,7 @@ function StakingState({ children }: PropsWithChildren) {
             ),
         },
       ] as const,
-    [availableBalance, minAmountValidator, balanceValidator],
+    [availableBalance, minAmountValidator,],
   );
 
   const formSchema = useMemo(() => {
@@ -182,10 +192,12 @@ function StakingState({ children }: PropsWithChildren) {
   );
 
   const showPreview = useCallback(({ amount, feeAmount }: FormData) => {
+    
     const formData: PreviewData = {
       amount,
       feeAmount,
     };
+    console.log("formData: ",formData);
     setStep({ name: "preview", data: formData });
   }, []);
 
@@ -193,26 +205,26 @@ function StakingState({ children }: PropsWithChildren) {
     setStep({ name: "initial" });
   }, []);
 
-  const createStakeMsg = useCallback(
+  const createRedeemMsg = useCallback(
     (amount: number) => {
+        console.log("amount: ", amount);
+        
       const msg: MsgExecuteContractEncodeObject = {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: {
           sender: bech32Address,
-          contract: ORDER_ADDRESS,
+          contract:
+            "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
           msg: toUtf8(
             JSON.stringify({
-              stake: {},
+              un_stake: {
+                amount: amount.toString()
+              },
             }),
           ),
-          funds: [
-            {
-              denom: "ubbn",
-              amount: amount.toString(),
-            },
-          ],
+          funds: []
         },
-      };
+      }
       return msg;
     },
     [bech32Address],
@@ -220,29 +232,30 @@ function StakingState({ children }: PropsWithChildren) {
 
   const submitForm = useCallback(async () => {
     if (step.name !== "preview" || !step.data) return;
-    
+
     try {
       setStep({ name: "signing" });
       const amount = step.data.amount;
-      const msg = createStakeMsg(amount);
+      const msg = createRedeemMsg(amount);
 
       setStep({ name: "loading" });
       const result = await sendBbnTx(await signBbnTx(msg));
-      logger.info("Baby Staking: Stake", {
+      logger.info("Baby Staking: Redeem", {
         txHash: result?.transactionHash,
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
+      await refetchStakedAmount()
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
       setStep({ name: "initial" });
     }
-  }, [step, logger, handleError, sendBbnTx, signBbnTx, createStakeMsg]);
+  }, [step, logger, handleError, sendBbnTx, signBbnTx, createRedeemMsg]);
 
   const calculateFee = useCallback(
     async ({ amount }: Omit<FormData, "feeAmount">) => {
       try {
-        const msg = createStakeMsg(babyToUbbn(amount));
+        const msg = createRedeemMsg(babyToUbbn(amount));
         const result = await estimateBbnGasFee(msg);
         return result.amount.reduce(
           (sum, { amount }) => sum + Number(amount),
@@ -254,8 +267,12 @@ function StakingState({ children }: PropsWithChildren) {
         return 0;
       }
     },
-    [handleError, logger, estimateBbnGasFee, createStakeMsg],
+    [handleError, logger, estimateBbnGasFee, createRedeemMsg],
   );
+
+  useEffect(() => {
+    refetchStakedAmount()
+  }, [bech32Address])
 
   const resetForm = useCallback(() => {
     setStep({ name: "initial" });
@@ -264,7 +281,6 @@ function StakingState({ children }: PropsWithChildren) {
   const context = useMemo(() => {
     const displayBalance = babylon.utils.ubbnToBaby(availableBalance);
     return {
-      loading,
       step,
       availableBalance: displayBalance,
       formSchema,
@@ -276,10 +292,10 @@ function StakingState({ children }: PropsWithChildren) {
       resetForm,
       closePreview,
       disabled: isDisabled,
+      exchangeRate
     };
   }, [
     availableBalance,
-    loading,
     step,
     formSchema,
     fields,
@@ -290,9 +306,10 @@ function StakingState({ children }: PropsWithChildren) {
     resetForm,
     closePreview,
     isDisabled,
+    exchangeRate
   ]);
 
   return <StateProvider value={context}>{children}</StateProvider>;
 }
 
-export { StakingState, useStakingState };
+export { RedeemState, useRedeemState };
