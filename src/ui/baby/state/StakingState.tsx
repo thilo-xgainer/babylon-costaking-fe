@@ -25,6 +25,7 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { GEO_BLOCK_MESSAGE } from "@/ui/common/types/services/healthCheck";
 import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+import { ORDER_ADDRESS } from "@/ui/common/constants";
 
 import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
 
@@ -198,8 +199,7 @@ function StakingState({ children }: PropsWithChildren) {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: {
           sender: bech32Address,
-          contract:
-            "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+          contract: ORDER_ADDRESS,
           msg: toUtf8(
             JSON.stringify({
               stake: {},

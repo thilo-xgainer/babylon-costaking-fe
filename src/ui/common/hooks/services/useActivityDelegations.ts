@@ -28,6 +28,7 @@ export function useActivityDelegations() {
     openConfirmationModal,
     closeConfirmationModal,
   } = useDelegationService();
+  console.log("🚀 ~ useActivityDelegations ~ delegations:", delegations);
 
   const { isLoading: isStakingManagerLoading } = useStakingManagerService();
   const isStakingManagerReady = !isStakingManagerLoading;
