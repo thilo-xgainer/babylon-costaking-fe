@@ -21,6 +21,7 @@ import { FinalityProviderState } from "./FinalityProviderState";
 import { RewardsState } from "./RewardState";
 import { StakingExpansionState } from "./StakingExpansionState";
 import { StakingState } from "./StakingState";
+import { RedeemState } from "@/ui/baby/state/RedeemState";
 
 // The order of the states is important for the state provider
 const STATE_LIST = [
@@ -31,6 +32,7 @@ const STATE_LIST = [
   StakingState,
   StakingExpansionState,
   RewardsState,
+  RedeemState
 ];
 
 export interface AppState {

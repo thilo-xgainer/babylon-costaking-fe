@@ -31,25 +31,23 @@ export const WithdrawCard = () => {
     data: withdrawlAmount,
     isLoading: isWirhdrawalAmountLoading,
     refetch: refetcWithdrawlAmount,
-  } = useCosmwasmQuery<PendingRequest[]>({
+  } = useCosmwasmQuery<number>({
     contractAddress:
       "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
     queryMsg: {
-        get_withdrawal_amount: {
+      get_withdrawal_amount: {
         user: bech32Address,
       },
     },
   });
-  console.log("redeemRequest: ", redeemRequest, withdrawlAmount);
 
   return (
     <div>
       <div className="bg-[#F9F9F9] p-4">
         <p>Pending Reqest</p>
-        <div className="w-full flex flex-col items-center">
-            {
-                withdrawlAmount != 0 && (
-                    <div  className="w-1/2 px-6 py-3 flex justify-between items-center bg-[#1b5f79]">
+        <div className="flex w-full flex-col items-center gap-2">
+          {withdrawlAmount && withdrawlAmount > 0 && (
+            <div className="flex w-1/2 items-center justify-between bg-[#1b5f79] px-6 py-3">
               <div className="flex items-center gap-1">
                 <img src={tbabyLogo} />
                 <div className="flex flex-col items-start text-white">
@@ -57,24 +55,26 @@ export const WithdrawCard = () => {
                   <p>BABY</p>
                 </div>
               </div>
-              <button className="cursor-pointer flex items-center gap-1 bg-[#f0f0f0] p-4 text-center hover:opacity-75 text-[#547496]">
+              <button className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75">
                 Withdraw
               </button>
             </div>
-                )
-            }
+          )}
           {redeemRequest?.map((request, index) => (
-            <div key={index} className="w-1/2 px-6 py-3 flex justify-between items-center bg-[#1b5f79]">
+            <div
+              key={index}
+              className="flex w-1/2 items-center justify-between bg-[#1b5f79] px-6 py-3"
+            >
               <div className="flex items-center gap-1">
                 <img src={tbabyLogo} />
                 <div className="flex flex-col items-start text-white">
-                  <p>{ubbnToBaby(request.amount)}</p>
+                  <p>{ubbnToBaby(Number(request.amount))}</p>
                   <p>BABY</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 bg-[#f1f1f1] p-4 text-center cursor-pointer text-[#547496]">
+              <div className="flex cursor-pointer items-center gap-1 bg-[#f1f1f1] p-4 text-center text-[#547496]">
                 {timeRemaining(request.unlock_at)}
-                <ClockIcon size={16}/>
+                <ClockIcon size={16} />
               </div>
             </div>
           ))}

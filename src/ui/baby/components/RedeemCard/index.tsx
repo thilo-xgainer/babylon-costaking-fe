@@ -1,87 +1,43 @@
-import React, { useState } from "react";
-import { OREDER_CONTRACT_ADDRESS } from "../../../common/constants";
-import tbabyLogo from "../../../common/assets/baby.png";
-import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
-import { toUtf8 } from "@cosmjs/encoding";
-import { useBbnTransaction } from "../../../common/hooks/client/rpc/mutation/useBbnTransaction";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { babyToUbbn,ubbnToBaby } from "../../../common/utils/bbn";
-import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
-
-export const Redeem = () => {
-  const [amount, setAmount] = useState<string>();
-  const { sendBbnTx, signBbnTx } = useBbnTransaction();
-  const { bech32Address } = useCosmosWallet();
+import { useRedeemState } from "../../state/RedeemState";
+import { Form } from "@babylonlabs-io/core-ui";
+import { AmountField } from "@/ui/baby/components/AmountField";
+import { FeeField } from "@/ui/baby/components/FeeField";
+import { SubmitButton } from "@/ui/baby/widgets/SubmitButton";
+import { FormAlert } from "@/ui/common/components/Multistaking/MultistakingForm/FormAlert";
+import { FormFields } from "@/ui/common/state/StakingState";
+import { RedeemModal } from "../RedeemModal";
+export const Redeem = ({
+  isGeoBlocked = false,
+}: {
+  isGeoBlocked?: boolean;
+}) => {
   const {
-    data: stakedAmount ,
-    isLoading: isStakedAmountLoading,
-    refetch: refetchStakedAmount,
-  } = useCosmwasmQuery({
-    contractAddress:
-      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
-    queryMsg: {
-      get_user_staked: {
-        user: bech32Address
-      },
-    },
-  });
+    formSchema,
+    availableBalance,
+    babyPrice,
+    calculateFee,
+    showPreview,
+    disabled
+  } = useRedeemState();
+  const handlePreview = ({ amount, feeAmount }: FormFields) => {
+    showPreview({ amount, feeAmount });
+  };
+  
   
 
-  const handleRedeem = async () => {
-    try {
-        console.log("bech32Address: ",bech32Address, amount, babyToUbbn(Number(amount)).toString());
-        
-      const redeemBabyMsg: MsgExecuteContractEncodeObject = {
-        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-        value: {
-          sender: bech32Address,
-          contract:
-            "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
-          msg: toUtf8(
-            JSON.stringify({
-              un_stake: {
-                amount: babyToUbbn(Number(amount)).toString()
-              },
-            }),
-          ),
-          funds: []
-        },
-      }
-
-      const res = await sendBbnTx(await signBbnTx(redeemBabyMsg));
-      console.log("res: ", res);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-
   return (
-    <div>
-      <div className="bg-[#F9F9F9] p-4">
-        <div className="mb-4">
-          <p>Staked amount: {ubbnToBaby(Number(stakedAmount))}</p>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={tbabyLogo} />
-            <p className="text-lg">tBABY</p>
-          </div>
-          <input
-            value={amount}
-            onChange={(e) => {
-              setAmount(e.target.value);
-            }}
-            className="w-2/3 bg-[#F9F9F9] text-right text-lg outline-none"
-            placeholder="Enter Amount"
-          />
-        </div>
-      </div>
-      <button
-        className="mt-5 w-full bg-[#f0f0f0] p-4 text-center hover:opacity-75"
-        onClick={handleRedeem}
-      >
-        Redeem tBABY
-      </button>
-    </div>
+    <Form
+      schema={formSchema}
+      className="flex h-[500px] flex-col gap-2"
+      onSubmit={handlePreview}
+    >
+      <AmountField balance={availableBalance} price={babyPrice} />
+      {/* <ValidatorField /> */}
+      <FeeField babyPrice={babyPrice} calculateFee={calculateFee} />
+
+      <SubmitButton isGeoBlocked={isGeoBlocked} />
+      <RedeemModal />
+      <FormAlert {...disabled} />
+    </Form>
   );
 };

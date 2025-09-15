@@ -22,6 +22,7 @@ import { PendingOperationsProvider } from "./hooks/services/usePendingOperations
 import StakingForm from "./widgets/StakingForm";
 import { Redeem } from "./components/RedeemCard";
 import { WithdrawCard } from "./components/WithdrawCard";
+import { RedeemState } from "./state/RedeemState";
 
 type TabId = "stake" | "activity" | "rewards" | "faqs";
 
@@ -97,13 +98,13 @@ function BabyLayoutContent() {
     {
       id: "redeem",
       label: "Redeem",
-      content: <Redeem />,
+      content: <Redeem isGeoBlocked={isGeoBlocked} />,
     },
     {
       id: "withdraw",
       label: "Withdraw",
       content: <WithdrawCard />,
-    }
+    },
   ];
 
   const fallbackTabItems = [
@@ -130,27 +131,29 @@ function BabyLayoutContent() {
 
   return (
     <StakingState>
-      <ValidatorState>
-        <DelegationState>
-          <RewardState>
-            <Content>
-              <AuthGuard fallback={fallbackContent} geoBlocked={isGeoBlocked}>
-                <Container
-                  as="main"
-                  className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
-                >
-                  <Tabs
-                    items={tabItems}
-                    defaultActiveTab="stake"
-                    activeTab={activeTab}
-                    onTabChange={(tabId) => setActiveTab(tabId as TabId)}
-                  />
-                </Container>
-              </AuthGuard>
-            </Content>
-          </RewardState>
-        </DelegationState>
-      </ValidatorState>
+      <RedeemState>
+        <ValidatorState>
+          <DelegationState>
+            <RewardState>
+              <Content>
+                <AuthGuard fallback={fallbackContent} geoBlocked={isGeoBlocked}>
+                  <Container
+                    as="main"
+                    className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
+                  >
+                    <Tabs
+                      items={tabItems}
+                      defaultActiveTab="stake"
+                      activeTab={activeTab}
+                      onTabChange={(tabId) => setActiveTab(tabId as TabId)}
+                    />
+                  </Container>
+                </AuthGuard>
+              </Content>
+            </RewardState>
+          </DelegationState>
+        </ValidatorState>
+      </RedeemState>
     </StakingState>
   );
 }
