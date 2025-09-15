@@ -23,7 +23,7 @@ export interface FormData {
   feeAmount: number;
 }
 
-interface PreviewData {
+export interface PreviewData {
   feeAmount: number;
 }
 
@@ -50,7 +50,7 @@ interface WithdrawState {
   babyPrice: number;
   redeemRequest: PendingRequest[] | undefined
   withdrawalAmount: number | undefined
-  showPreview(data: FormData): void;
+  showPreview(): void;
   closePreview(): void;
   submitForm(): Promise<void>;
   resetForm(): void;
@@ -149,7 +149,7 @@ function WithdrawState({ children }: PropsWithChildren) {
   }, [bech32Address, withdrawalAmount]);
 
   const submitForm = useCallback(async () => {
-    // if (step.name !== "preview" || !step.data) return;
+    if (step.name !== "preview" || !step.data) return;
 
     try {
       setStep({ name: "signing" });
