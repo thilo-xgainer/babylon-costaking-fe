@@ -6,6 +6,12 @@ import { ClockIcon } from "@/ui/icons/ClockIcon";
 
 export const WithdrawCard = () => {
   const { redeemRequest, withdrawalAmount, submitForm } = useWithdrawState();
+  console.log("redeemRequest: ",redeemRequest);
+  redeemRequest?.forEach((item) => {
+    console.log( item.unlock_at,timeRemaining(item.unlock_at));
+    
+  })
+  
 
   return (
     <div>
@@ -29,7 +35,7 @@ export const WithdrawCard = () => {
               </button>
             </div>
           )}
-          {redeemRequest?.map((request, index) => (
+          {redeemRequest?.filter(request => request.unlock_at > (new Date()).getTime() /1000).map((request, index) => (
             <div
               key={index}
               className="flex w-1/2 items-center justify-between bg-[#1b5f79] px-6 py-3"
