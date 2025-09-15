@@ -23,6 +23,7 @@ import StakingForm from "./widgets/StakingForm";
 import { Redeem } from "./components/RedeemCard";
 import { WithdrawCard } from "./components/WithdrawCard";
 import { RedeemState } from "./state/RedeemState";
+import { WithdrawState } from "./state/WithdrawState";
 
 type TabId = "stake" | "activity" | "rewards" | "faqs";
 
@@ -132,27 +133,32 @@ function BabyLayoutContent() {
   return (
     <StakingState>
       <RedeemState>
-        <ValidatorState>
-          <DelegationState>
-            <RewardState>
-              <Content>
-                <AuthGuard fallback={fallbackContent} geoBlocked={isGeoBlocked}>
-                  <Container
-                    as="main"
-                    className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
+        <WithdrawState>
+          <ValidatorState>
+            <DelegationState>
+              <RewardState>
+                <Content>
+                  <AuthGuard
+                    fallback={fallbackContent}
+                    geoBlocked={isGeoBlocked}
                   >
-                    <Tabs
-                      items={tabItems}
-                      defaultActiveTab="stake"
-                      activeTab={activeTab}
-                      onTabChange={(tabId) => setActiveTab(tabId as TabId)}
-                    />
-                  </Container>
-                </AuthGuard>
-              </Content>
-            </RewardState>
-          </DelegationState>
-        </ValidatorState>
+                    <Container
+                      as="main"
+                      className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
+                    >
+                      <Tabs
+                        items={tabItems}
+                        defaultActiveTab="stake"
+                        activeTab={activeTab}
+                        onTabChange={(tabId) => setActiveTab(tabId as TabId)}
+                      />
+                    </Container>
+                  </AuthGuard>
+                </Content>
+              </RewardState>
+            </DelegationState>
+          </ValidatorState>
+        </WithdrawState>
       </RedeemState>
     </StakingState>
   );
