@@ -1,10 +1,14 @@
 import { useMemo } from "react";
 
 import { useBTCWallet } from "@/ui/common/context/wallet/BTCWalletProvider";
-import { useDelegationService } from "@/ui/common/hooks/services/useDelegationService";
+import {
+  useDelegationService,
+  ConfirmationModalState,
+} from "@/ui/common/hooks/services/useDelegationService";
 import { useExpansionVisibilityService } from "@/ui/common/hooks/services/useExpansionVisibilityService";
 import { useStakingManagerService } from "@/ui/common/hooks/services/useStakingManagerService";
 import { useFinalityProviderState } from "@/ui/common/state/FinalityProviderState";
+import { DelegationV2 } from "@/ui/common/types/delegationsV2";
 
 import {
   ActivityCardData,
@@ -16,7 +20,22 @@ import { useActivityValidation } from "./useActivityValidation";
  * Main hook orchestrating all activity-related delegation logic.
  * Combines validation, visibility filtering, and card transformation.
  */
-export function useActivityDelegations() {
+export function useActivityDelegations(): {
+  activityData: ActivityCardData[];
+
+  isLoading: boolean;
+  isStakingManagerReady: boolean;
+
+  processing: boolean;
+  confirmationModal: ConfirmationModalState | null;
+  executeDelegationAction: (
+    action: string,
+    delegation: DelegationV2,
+  ) => Promise<void>;
+  closeConfirmationModal: () => void;
+
+  delegations: DelegationV2[];
+} {
   // Core delegation and wallet data
   const {
     processing,
@@ -28,7 +47,6 @@ export function useActivityDelegations() {
     openConfirmationModal,
     closeConfirmationModal,
   } = useDelegationService();
-  console.log("🚀 ~ useActivityDelegations ~ delegations:", delegations);
 
   const { isLoading: isStakingManagerLoading } = useStakingManagerService();
   const isStakingManagerReady = !isStakingManagerLoading;

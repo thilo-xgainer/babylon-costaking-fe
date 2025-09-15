@@ -57,7 +57,7 @@ function DelegationState({ children }: PropsWithChildren) {
           BigInt(amount),
         );
         logger.info("Baby Staking: Unbond", {
-          txHash: result?.txHash || "",
+          txHash: result?.transactionHash || "",
           validatorAddress,
           amount,
         });

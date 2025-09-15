@@ -124,34 +124,38 @@ export function useStakingService() {
             msg: toUtf8(
               JSON.stringify({
                 create_btc_delegation: {
-                  fp_btc_pk_list: msg.value.fpBtcPkList.map((el) =>
-                    Buffer.from(el).toString("hex"),
+                  fp_btc_pk_list: (msg as any).value.fpBtcPkList.map(
+                    (el: any) => Buffer.from(el).toString("hex"),
                   ),
                   staker_addr: orderAddress,
                   pop: {
                     btc_sig_type: "BIP322",
-                    btc_sig: Buffer.from(msg.value.pop.btcSig).toString("hex"),
+                    btc_sig: Buffer.from(
+                      (msg as any).value.pop.btcSig,
+                    ).toString("hex"),
                   },
-                  btc_pk: Buffer.from(msg.value.btcPk).toString("hex"),
-                  staking_time: msg.value.stakingTime,
-                  staking_value: msg.value.stakingValue,
-                  staking_tx: Buffer.from(msg.value.stakingTx).toString("hex"),
-                  slashing_tx: Buffer.from(msg.value.slashingTx).toString(
-                    "hex",
-                  ),
-                  delegator_slashing_sig: Buffer.from(
-                    msg.value.delegatorSlashingSig,
+                  btc_pk: Buffer.from((msg as any).value.btcPk).toString("hex"),
+                  staking_time: (msg as any).value.stakingTime,
+                  staking_value: (msg as any).value.stakingValue,
+                  staking_tx: Buffer.from(
+                    (msg as any).value.stakingTx,
                   ).toString("hex"),
-                  unbonding_time: msg.value.unbondingTime,
-                  unbonding_tx: Buffer.from(msg.value.unbondingTx).toString(
-                    "hex",
-                  ),
-                  unbonding_value: msg.value.unbondingValue,
+                  slashing_tx: Buffer.from(
+                    (msg as any).value.slashingTx,
+                  ).toString("hex"),
+                  delegator_slashing_sig: Buffer.from(
+                    (msg as any).value.delegatorSlashingSig,
+                  ).toString("hex"),
+                  unbonding_time: (msg as any).value.unbondingTime,
+                  unbonding_tx: Buffer.from(
+                    (msg as any).value.unbondingTx,
+                  ).toString("hex"),
+                  unbonding_value: (msg as any).value.unbondingValue,
                   unbonding_slashing_tx: Buffer.from(
-                    msg.value.unbondingSlashingTx,
+                    (msg as any).value.unbondingSlashingTx,
                   ).toString("hex"),
                   delegator_unbonding_slashing_sig: Buffer.from(
-                    msg.value.delegatorUnbondingSlashingSig,
+                    (msg as any).value.delegatorUnbondingSlashingSig,
                   ).toString("hex"),
                 },
               }),

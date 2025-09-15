@@ -57,7 +57,7 @@ function RewardState({ children }: PropsWithChildren) {
       setProcessing(true);
       const result = await claimAllRewards();
       logger.info("Baby Staking: claim rewards", {
-        txHash: result?.txHash,
+        txHash: result?.transactionHash,
       });
       setShowClaimModal(false);
     } catch (error: any) {

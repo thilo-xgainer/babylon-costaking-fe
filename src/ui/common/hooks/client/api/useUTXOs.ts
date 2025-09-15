@@ -5,7 +5,14 @@ import { getUTXOs } from "@/ui/common/utils/mempool_api";
 
 export const UTXO_KEY = "UTXO";
 
-export function useUTXOs({ enabled = true }: { enabled?: boolean } = {}) {
+export function useUTXOs({ enabled = true }: { enabled?: boolean } = {}): {
+  isLoading: boolean;
+  isError: boolean;
+  error: unknown;
+  refetch: () => void;
+  allUTXOs: any[];
+  confirmedUTXOs: any[];
+} {
   const { address } = useBTCWallet();
 
   const { data, isLoading, isError, error, refetch } = useClientQuery({
