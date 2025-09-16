@@ -4,6 +4,7 @@ import { ubbnToBaby } from "@/ui/common/utils/bbn";
 import { timeRemaining } from "@/utils/format";
 
 import { WithdrawModal } from "../WithdrawModal";
+import { ClockIcon } from "@/ui/icons/ClockIcon";
 
 export const WithdrawCard = () => {
   const { redeemRequest, withdrawalAmount, showPreview } = useWithdrawState();
@@ -13,8 +14,8 @@ export const WithdrawCard = () => {
   };
   return (
     <div>
-      <div className="bg-[#F9F9F9] p-4">
-        <p>Pending Reqest</p>
+      <div className="bg-[#F9F9F9] dark:bg-[#252525] p-4">
+        <p>Withdraw Reqest</p>
         <div className="flex w-full flex-col items-center gap-2">
           {withdrawalAmount && withdrawalAmount > 0 && (
             <div className="flex w-1/2 items-center justify-between bg-[#1b5f79] px-6 py-3">
@@ -27,7 +28,7 @@ export const WithdrawCard = () => {
               </div>
               <WithdrawModal />
               <button
-                className="flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 text-center text-[#547496] hover:opacity-75"
+                className="w-[125px] flex cursor-pointer items-center gap-1 bg-[#f0f0f0] p-4 justify-center text-[#547496] hover:opacity-75"
                 onClick={handlePreview}
               >
                 Withdraw
@@ -50,8 +51,8 @@ export const WithdrawCard = () => {
                     <p>BABY</p>
                   </div>
                 </div>
-                <div className="flex cursor-pointer items-center gap-1 bg-[#f1f1f1] p-4 text-center text-[#547496]">
-                  {timeRemaining(request.unlock_at)}
+                <div className="w-[125px] flex cursor-pointer items-center gap-1 bg-[#f1f1f1] p-4 text-center justify-center text-[#547496]">
+                  {timeRemaining(request.unlock_at)} <ClockIcon/>
                 </div>
               </div>
             ))}
