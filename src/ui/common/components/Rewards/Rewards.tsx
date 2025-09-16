@@ -9,7 +9,7 @@ import { AuthGuard } from "@/ui/common/components/Common/AuthGuard";
 import { Section } from "@/ui/common/components/Section/Section";
 import { getNetworkConfigBBN } from "@/ui/common/config/network/bbn";
 import { useRewardsService } from "@/ui/common/hooks/services/useRewardsService";
-import { useRewardsState } from "@/ui/common/state/RewardState";
+import { useRewardsState } from "@/ui/baby/state/RewardState";
 import { ubbnToBaby } from "@/ui/common/utils/bbn";
 
 import { ClaimStatusModal } from "../Modals/ClaimStatusModal/ClaimStatusModal";

@@ -1,5 +1,6 @@
 import { useWalletConnect } from "@babylonlabs-io/wallet-connector";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
 import { AuthGuard } from "@/ui/common/components/Common/AuthGuard";
 import { Container } from "@/ui/common/components/Container/Container";
@@ -10,8 +11,10 @@ import StakingForm from "@/ui/baby/widgets/StakingForm";
 import { Redeem } from "@/ui/baby/components/RedeemCard";
 import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+import { Rewards } from "@/ui/common/components/Rewards";
+import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
 
-type TabId = "stake" | "rewards";
+type TabId = "stake" | "redeem" | "withdraw" | "rewards";
 
 export default function Order() {
   return (
@@ -26,6 +29,9 @@ function OrderContent() {
   const { connected } = useWalletConnect();
   const { isGeoBlocked } = useHealthCheck();
   const { bech32Address } = useCosmosWallet();
+  const { orderAddress } = useParams();
+  const { data: orderList } = useOrderList();
+
   useEffect(() => {
     if (!connected) {
       setActiveTab("stake");
@@ -55,6 +61,21 @@ function OrderContent() {
       content: <WithdrawCard />,
     },
   ];
+
+  if (
+    orderAddress &&
+    bech32Address &&
+    orderList.find(
+      (order) =>
+        order.address === orderAddress && order.owner === bech32Address,
+    )
+  ) {
+    tabItems.push({
+      id: "rewards",
+      label: "BTC Rewards",
+      content: <Rewards />,
+    });
+  }
 
   const fallbackTabItems = [
     {

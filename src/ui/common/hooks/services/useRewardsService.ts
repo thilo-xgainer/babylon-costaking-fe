@@ -6,7 +6,7 @@ import { useParams } from "react-router";
 import { ONE_SECOND } from "@/ui/common/constants";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { useLogger } from "@/ui/common/hooks/useLogger";
-import { useRewardsState } from "@/ui/common/state/RewardState";
+import { useRewardsState } from "@/ui/baby/state/RewardState";
 import { retry } from "@/ui/common/utils";
 import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";

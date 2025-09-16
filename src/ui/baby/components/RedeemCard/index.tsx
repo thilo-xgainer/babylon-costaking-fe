@@ -21,8 +21,6 @@ export const Redeem = ({
     showPreview,
     disabled,
   } = useRedeemState();
-  console.log("🚀 ~ Redeem ~ babyPrice:", babyPrice);
-  console.log("🚀 ~ Redeem ~ availableBalance:", availableBalance);
   const handlePreview = ({ amount, feeAmount }: FormFields) => {
     showPreview({ amount, feeAmount });
   };

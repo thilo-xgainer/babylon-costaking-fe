@@ -10,6 +10,8 @@ import { useOrdinals } from "@/ui/common/hooks/client/api/useOrdinals";
 import { useUTXOs } from "@/ui/common/hooks/client/api/useUTXOs";
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import { filterDust } from "@/ui/common/utils/wallet";
+import { RedeemState } from "@/ui/baby/state/RedeemState";
+import { WithdrawState } from "@/ui/baby/state/WithdrawState";
 
 import { useNetworkInfo } from "../hooks/client/api/useNetworkInfo";
 import { NetworkInfo } from "../types/networkInfo";
@@ -18,11 +20,8 @@ import { BalanceState } from "./BalanceState";
 import { DelegationState } from "./DelegationState";
 import { DelegationV2State } from "./DelegationV2State";
 import { FinalityProviderState } from "./FinalityProviderState";
-import { RewardsState } from "./RewardState";
 import { StakingExpansionState } from "./StakingExpansionState";
 import { StakingState } from "./StakingState";
-import { RedeemState } from "@/ui/baby/state/RedeemState";
-import { WithdrawState } from "@/ui/baby/state/WithdrawState";
 
 // The order of the states is important for the state provider
 const STATE_LIST = [
@@ -32,9 +31,8 @@ const STATE_LIST = [
   BalanceState,
   StakingState,
   StakingExpansionState,
-  RewardsState,
   RedeemState,
-  WithdrawState
+  WithdrawState,
 ];
 
 export interface AppState {

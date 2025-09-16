@@ -93,7 +93,7 @@ function StakingState({ children }: PropsWithChildren) {
   const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
   const { loading } = useValidatorService();
   const { isGeoBlocked } = useHealthCheck();
-  const { balance } = useWalletService();
+  const { balance, refetchBalance } = useWalletService();
   const { handleError } = useError();
   const { bech32Address } = useCosmosWallet();
   const logger = useLogger();
@@ -232,12 +232,21 @@ function StakingState({ children }: PropsWithChildren) {
         txHash: result?.transactionHash,
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
+      refetchBalance();
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
       setStep({ name: "initial" });
     }
-  }, [step, logger, handleError, sendBbnTx, signBbnTx, createStakeMsg]);
+  }, [
+    step,
+    logger,
+    handleError,
+    sendBbnTx,
+    signBbnTx,
+    createStakeMsg,
+    refetchBalance,
+  ]);
 
   const calculateFee = useCallback(
     async ({ amount }: Omit<FormData, "feeAmount">) => {

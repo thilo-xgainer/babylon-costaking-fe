@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 
 import { DelegationState } from "@/ui/baby/state/DelegationState";
-import { RewardState } from "@/ui/baby/state/RewardState";
+import { RewardsState } from "@/ui/baby/state/RewardState";
 import { StakingState } from "@/ui/baby/state/StakingState";
 import { Content } from "@/ui/common/components/Content/Content";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
@@ -30,11 +30,11 @@ function BabyLayoutContent() {
       <RedeemState>
         <WithdrawState>
           <DelegationState>
-            <RewardState>
+            <RewardsState>
               <Content>
                 <Outlet />
               </Content>
-            </RewardState>
+            </RewardsState>
           </DelegationState>
         </WithdrawState>
       </RedeemState>
