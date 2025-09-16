@@ -6,6 +6,7 @@ import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";
 import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
+import { maxDecimals } from "@/ui/common/utils/maxDecimals";
 
 interface RewardsStateProps {
   loading: boolean;
@@ -109,7 +110,7 @@ export function RewardsState({ children }: PropsWithChildren) {
       showProcessingModal,
       processing,
       bbnAddress,
-      rewardBalance: rewardBalance + pendingReward * (1 - fee),
+      rewardBalance: rewardBalance + maxDecimals(pendingReward * (1 - fee), 6),
       transactionFee,
       transactionHash,
       setTransactionHash,
