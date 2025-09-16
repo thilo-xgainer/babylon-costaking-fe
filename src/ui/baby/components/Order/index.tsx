@@ -9,7 +9,7 @@ import { PendingOperationsProvider } from "@/ui/baby/hooks/services/usePendingOp
 import StakingForm from "@/ui/baby/widgets/StakingForm";
 import { Redeem } from "@/ui/baby/components/RedeemCard";
 import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+// import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 
 type TabId = "stake" | "rewards";
 
@@ -25,7 +25,7 @@ function OrderContent() {
   const [activeTab, setActiveTab] = useState<TabId>("stake");
   const { connected } = useWalletConnect();
   const { isGeoBlocked } = useHealthCheck();
-  const { bech32Address } = useCosmosWallet();
+  // const { bech32Address } = useCosmosWallet();
   useEffect(() => {
     if (!connected) {
       setActiveTab("stake");
