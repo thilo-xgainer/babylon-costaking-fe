@@ -24,7 +24,7 @@ export interface FormData {
   feeAmount: number;
 }
 
-interface PreviewData {
+export interface PreviewData {
   feeAmount: number;
 }
 
@@ -51,7 +51,7 @@ interface WithdrawState {
   babyPrice: number;
   redeemRequest: PendingRequest[] | undefined;
   withdrawalAmount: number | undefined;
-  showPreview(data: FormData): void;
+  showPreview(): void;
   closePreview(): void;
   submitForm(): Promise<void>;
   resetForm(): void;
@@ -158,12 +158,21 @@ function WithdrawState({ children }: PropsWithChildren) {
         txHash: result?.transactionHash,
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
+      await refetchRedeemRequest();
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
       setStep({ name: "initial" });
     }
-  }, [step, logger, handleError, sendBbnTx, signBbnTx, createWithdrawMsg]);
+  }, [
+    step,
+    logger,
+    handleError,
+    sendBbnTx,
+    signBbnTx,
+    createWithdrawMsg,
+    refetchRedeemRequest,
+  ]);
 
   useEffect(() => {
     let isMounted = true;
@@ -202,7 +211,7 @@ function WithdrawState({ children }: PropsWithChildren) {
   useEffect(() => {
     refetchRedeemRequest();
     refetcWithdrawlAmount();
-  }, [bech32Address]);
+  }, [bech32Address, refetcWithdrawlAmount, refetchRedeemRequest]);
 
   const context = useMemo(() => {
     return {
