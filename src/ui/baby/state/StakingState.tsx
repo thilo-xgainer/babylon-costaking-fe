@@ -2,6 +2,7 @@ import { type PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { number, object, ObjectSchema, ObjectShape } from "yup";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
+import { useParams } from "react-router";
 
 import babylon from "@/infrastructure/babylon";
 import { useValidatorService } from "@/ui/baby/hooks/services/useValidatorService";
@@ -25,7 +26,6 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { GEO_BLOCK_MESSAGE } from "@/ui/common/types/services/healthCheck";
 import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { ORDER_ADDRESS } from "@/ui/common/constants";
 
 import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
 
@@ -89,7 +89,7 @@ const { StateProvider, useState: useStakingState } =
 
 function StakingState({ children }: PropsWithChildren) {
   const [step, setStep] = useState<StakingStep>({ name: "initial" });
-
+  const { orderAddress } = useParams();
   const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
   const { loading } = useValidatorService();
   const { isGeoBlocked } = useHealthCheck();
@@ -199,7 +199,7 @@ function StakingState({ children }: PropsWithChildren) {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: {
           sender: bech32Address,
-          contract: ORDER_ADDRESS,
+          contract: orderAddress,
           msg: toUtf8(
             JSON.stringify({
               stake: {},
@@ -215,12 +215,12 @@ function StakingState({ children }: PropsWithChildren) {
       };
       return msg;
     },
-    [bech32Address],
+    [bech32Address, orderAddress],
   );
 
   const submitForm = useCallback(async () => {
     if (step.name !== "preview" || !step.data) return;
-    
+
     try {
       setStep({ name: "signing" });
       const amount = step.data.amount;

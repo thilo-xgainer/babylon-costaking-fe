@@ -26,6 +26,7 @@ import {
 import { retry } from "@/ui/common/utils";
 import { btcToSatoshi } from "@/ui/common/utils/btc";
 import { useValidatorState } from "@/ui/baby/state/ValidatorState";
+import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
 
 import { useBbnTransaction } from "../client/rpc/mutation/useBbnTransaction";
 
@@ -44,6 +45,7 @@ export function useStakingService() {
   const { bech32Address } = useCosmosWallet();
   const { validators } = useValidatorState();
   const logger = useLogger();
+  const { refetch: refetchOrderList } = useOrderList({ enabled: false });
 
   const calculateFeeAmount = useCallback(
     ({
@@ -74,6 +76,12 @@ export function useStakingService() {
   const createEOI = useCallback(
     async ({ finalityProviders, amount, term, feeRate }: FormFields) => {
       try {
+        if (!validators.length) {
+          throw new ClientError(
+            ERROR_CODES.VALIDATION_ERROR,
+            "No validators found",
+          );
+        }
         const eoiInput = {
           finalityProviderPksNoCoordHex: finalityProviders || [],
           stakingAmountSat: amount,
@@ -100,12 +108,13 @@ export function useStakingService() {
 
         const res = await sendBbnTx(await signBbnTx(createOrderMsg));
         const orderAddress = res.events
-          .find((el) => el.type === "execute")
+          .find((el) => el.type === "instantiate")
           ?.attributes?.find((el) => el.key === "_contract_address")?.value;
 
         if (!orderAddress) {
           throw "One user can create only one order";
         }
+        refetchOrderList();
 
         const { stakingTxHash, msg } = await createDelegationEoi(
           eoiInput,
@@ -222,6 +231,7 @@ export function useStakingService() {
       btcAddress,
       bech32Address,
       logger,
+      refetchOrderList,
     ],
   );
 

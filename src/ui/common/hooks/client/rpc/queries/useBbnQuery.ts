@@ -7,8 +7,9 @@ import {
   createProtobufRpcClient,
   setupBankExtension,
 } from "@cosmjs/stargate";
+import { useParams } from "react-router";
 
-import { ONE_MINUTE, ONE_SECOND, ORDER_ADDRESS } from "@/ui/common/constants";
+import { ONE_MINUTE, ONE_SECOND } from "@/ui/common/constants";
 import { useBbnRpc } from "@/ui/common/context/rpc/BbnRpcProvider";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { ClientError } from "@/ui/common/errors";
@@ -33,21 +34,22 @@ export const useBbnQuery = () => {
   const { bech32Address, connected } = useCosmosWallet();
   const { queryClient, tmClient } = useBbnRpc();
   const { hasRpcError, reconnect } = useRpcErrorHandler();
+  const { orderAddress } = useParams();
 
   /**
    * Gets the rewards from the user's account.
    * @returns {Promise<number>} - The rewards from the user's account.
    */
   const rewardsQuery = useClientQuery({
-    queryKey: [BBN_REWARDS_KEY, ORDER_ADDRESS, connected],
+    queryKey: [BBN_REWARDS_KEY, orderAddress, connected],
     queryFn: async () => {
-      if (!connected || !queryClient || !bech32Address) {
-        return undefined;
+      if (!connected || !queryClient || !bech32Address || !orderAddress) {
+        return 0;
       }
       const { incentive } = setupIncentiveExtension(queryClient);
       const req: incentivequery.QueryRewardGaugesRequest =
         incentivequery.QueryRewardGaugesRequest.fromPartial({
-          address: ORDER_ADDRESS,
+          address: orderAddress,
         });
 
       let rewards: incentivequery.QueryRewardGaugesResponse;

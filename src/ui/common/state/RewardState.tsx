@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState, type PropsWithChildren } from "react";
+import { useParams } from "react-router";
 
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 import { useBbnQuery } from "@/ui/common/hooks/client/rpc/queries/useBbnQuery";
-import { ORDER_ADDRESS } from "@/ui/common/constants";
+import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
 
 interface RewardsStateProps {
   loading: boolean;
@@ -53,7 +54,7 @@ export function RewardsState({ children }: PropsWithChildren) {
   const [processing, setProcessing] = useState(false);
   const [transactionFee, setTransactionFee] = useState(0);
   const [transactionHash, setTransactionHash] = useState("");
-
+  const { orderAddress } = useParams();
   const { bech32Address: bbnAddress } = useCosmosWallet();
 
   const {
@@ -61,10 +62,11 @@ export function RewardsState({ children }: PropsWithChildren) {
     isLoading: isRewardBalanceLoading,
     refetch: refetchRewardBalance,
   } = useCosmwasmQuery({
-    contractAddress: ORDER_ADDRESS,
+    contractAddress: orderAddress!,
     queryMsg: {
       get_btc_reward: {},
     },
+    options: { enabled: !!orderAddress },
   });
 
   const {
@@ -74,6 +76,15 @@ export function RewardsState({ children }: PropsWithChildren) {
       refetch: refetchPendingReward,
     },
   } = useBbnQuery();
+
+  const { data: feeConfig } = useCosmwasmQuery({
+    contractAddress: MARKETPLACE_CONTRACT_ADDRESS,
+    queryMsg: {
+      get_fee_config: {},
+    },
+  });
+
+  const fee = Number(feeConfig?.fee_btc_stake_rate ?? 0.05);
 
   const openRewardModal = useCallback(() => {
     setRewardModal(true);
@@ -98,7 +109,7 @@ export function RewardsState({ children }: PropsWithChildren) {
       showProcessingModal,
       processing,
       bbnAddress,
-      rewardBalance: rewardBalance + pendingReward,
+      rewardBalance: rewardBalance + pendingReward * (1 - fee),
       transactionFee,
       transactionHash,
       setTransactionHash,
@@ -129,6 +140,7 @@ export function RewardsState({ children }: PropsWithChildren) {
       pendingReward,
       isPendingRewardLoading,
       refetchPendingReward,
+      fee,
     ],
   );
 

@@ -41,7 +41,7 @@ export const MobileNavOverlay = ({ open, onClose }: MobileNavOverlayProps) => {
         </NavLink>
 
         <NavLink
-          to="/baby"
+          to="/order"
           onClick={onClose}
           className={({ isActive }) =>
             twJoin(
@@ -50,7 +50,7 @@ export const MobileNavOverlay = ({ open, onClose }: MobileNavOverlayProps) => {
             )
           }
         >
-          BABY Staking
+          Order
         </NavLink>
       </nav>
     </div>

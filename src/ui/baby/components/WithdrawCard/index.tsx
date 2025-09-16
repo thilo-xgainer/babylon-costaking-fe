@@ -1,12 +1,11 @@
-
 import tbabyLogo from "../../../common/assets/baby.png";
 import { ubbnToBaby } from "../../../common/utils/bbn";
 import { timeRemaining } from "../../../../utils/format";
-import { ClockIcon } from "../../../icon/ClockIcon";
+// import { ClockIcon } from "../../../icon/ClockIcon";
 import { useWithdrawState } from "../../state/WithdrawState";
 
 export const WithdrawCard = () => {
-  const {redeemRequest, withdrawalAmount} = useWithdrawState()
+  const { redeemRequest, withdrawalAmount } = useWithdrawState();
 
   return (
     <div>
@@ -41,7 +40,7 @@ export const WithdrawCard = () => {
               </div>
               <div className="flex cursor-pointer items-center gap-1 bg-[#f1f1f1] p-4 text-center text-[#547496]">
                 {timeRemaining(request.unlock_at)}
-                <ClockIcon size={16} />
+                {/* <ClockIcon size={16} /> */}
               </div>
             </div>
           ))}

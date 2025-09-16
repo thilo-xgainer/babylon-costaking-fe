@@ -1,8 +1,9 @@
 import { useCallback } from "react";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
+import { useParams } from "react-router";
 
-import { ONE_SECOND, ORDER_ADDRESS } from "@/ui/common/constants";
+import { ONE_SECOND } from "@/ui/common/constants";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { useLogger } from "@/ui/common/hooks/useLogger";
 import { useRewardsState } from "@/ui/common/state/RewardState";
@@ -28,6 +29,27 @@ export const useRewardsService = () => {
   const { handleError } = useError();
   const logger = useLogger();
   const { estimateBbnGasFee, sendBbnTx, signBbnTx } = useBbnTransaction();
+  const { orderAddress } = useParams();
+
+  const createWithdrawRewardMsg = useCallback(
+    (bech32Address: string) => {
+      const msg: MsgExecuteContractEncodeObject = {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: {
+          sender: bech32Address,
+          contract: orderAddress,
+          msg: toUtf8(
+            JSON.stringify({
+              claim_btc_reward: {},
+            }),
+          ),
+          funds: [],
+        },
+      };
+      return msg;
+    },
+    [orderAddress],
+  );
 
   /**
    * Estimates the gas fee for claiming rewards.
@@ -37,7 +59,7 @@ export const useRewardsService = () => {
     const withdrawRewardMsg = createWithdrawRewardMsg(bbnAddress);
     const gasFee = await estimateBbnGasFee(withdrawRewardMsg);
     return gasFee.amount.reduce((acc, coin) => acc + Number(coin.amount), 0);
-  }, [bbnAddress, estimateBbnGasFee]);
+  }, [bbnAddress, estimateBbnGasFee, createWithdrawRewardMsg]);
 
   const showPreview = useCallback(async () => {
     setTransactionFee(0);
@@ -112,27 +134,11 @@ export const useRewardsService = () => {
     closeProcessingModal,
     handleError,
     logger,
+    createWithdrawRewardMsg,
   ]);
 
   return {
     claimRewards,
     showPreview,
   };
-};
-
-const createWithdrawRewardMsg = (bech32Address: string) => {
-  const msg: MsgExecuteContractEncodeObject = {
-    typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-    value: {
-      sender: bech32Address,
-      contract: ORDER_ADDRESS,
-      msg: toUtf8(
-        JSON.stringify({
-          claim_btc_reward: {},
-        }),
-      ),
-      funds: [],
-    },
-  };
-  return msg;
 };

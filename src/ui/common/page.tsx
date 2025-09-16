@@ -6,10 +6,8 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 
 import { Activity } from "./components/Activity/Activity";
 import { Container } from "./components/Container/Container";
-import { FAQ } from "./components/FAQ/FAQ";
 import { MultistakingFormWrapper } from "./components/Multistaking/MultistakingForm/MultistakingFormWrapper";
 import { Rewards } from "./components/Rewards";
-import { Stats } from "./components/Stats/Stats";
 import { Tabs } from "./components/Tabs";
 
 const Home = () => {
@@ -50,11 +48,6 @@ const Home = () => {
           },
         ]
       : []),
-    {
-      id: "faqs",
-      label: "FAQs",
-      content: <FAQ variant="btc" />,
-    },
   ];
 
   return (
@@ -62,7 +55,6 @@ const Home = () => {
       as="main"
       className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
     >
-      <Stats />
       <Tabs
         items={tabItems}
         defaultActiveTab="stake"

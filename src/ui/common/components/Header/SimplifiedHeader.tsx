@@ -17,7 +17,7 @@ export const SimplifiedHeader = () => {
           <div className="absolute left-1/2 -translate-x-1/2 transform">
             <Nav>
               <NavItem title="BTC Staking" to="/btc" />
-              <NavItem title="BABY Staking" to="/baby" />
+              <NavItem title="Order" to="/order" />
             </Nav>
           </div>
         )}

@@ -1,10 +1,12 @@
-import { useRedeemState } from "../../state/RedeemState";
 import { Form } from "@babylonlabs-io/core-ui";
+
 import { AmountField } from "@/ui/baby/components/AmountField";
 import { FeeField } from "@/ui/baby/components/FeeField";
 import { SubmitButton } from "@/ui/baby/widgets/SubmitButton";
 import { FormAlert } from "@/ui/common/components/Multistaking/MultistakingForm/FormAlert";
 import { FormFields } from "@/ui/common/state/StakingState";
+
+import { useRedeemState } from "../../state/RedeemState";
 import { RedeemModal } from "../RedeemModal";
 export const Redeem = ({
   isGeoBlocked = false,
@@ -17,13 +19,13 @@ export const Redeem = ({
     babyPrice,
     calculateFee,
     showPreview,
-    disabled
+    disabled,
   } = useRedeemState();
+  console.log("🚀 ~ Redeem ~ babyPrice:", babyPrice);
+  console.log("🚀 ~ Redeem ~ availableBalance:", availableBalance);
   const handlePreview = ({ amount, feeAmount }: FormFields) => {
     showPreview({ amount, feeAmount });
   };
-  
-  
 
   return (
     <Form

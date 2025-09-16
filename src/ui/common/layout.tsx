@@ -3,6 +3,8 @@ import { twJoin } from "tailwind-merge";
 
 import { network } from "@/ui/common/config/network/btc";
 import { Network } from "@/ui/common/types/network";
+import { ValidatorState } from "@/ui/baby/state/ValidatorState";
+
 import "@/ui/globals.css";
 
 import { Footer } from "./components/Footer/Footer";
@@ -19,7 +21,9 @@ export default function RootLayout() {
       <div className="flex min-h-svh flex-col">
         <Header />
 
-        <Outlet />
+        <ValidatorState>
+          <Outlet />
+        </ValidatorState>
 
         <div className="mt-auto">
           <Footer />

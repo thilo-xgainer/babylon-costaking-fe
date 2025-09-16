@@ -7,6 +7,7 @@ import {
 } from "react";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { toUtf8 } from "@cosmjs/encoding";
+import { useParams } from "react-router";
 
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
 import { usePrice } from "@/ui/common/hooks/client/api/usePrices";
@@ -28,9 +29,9 @@ interface PreviewData {
 }
 
 type PendingRequest = {
-    amount: string;
-    unlock_at: number;
-  };
+  amount: string;
+  unlock_at: number;
+};
 
 interface Step<K extends string, D = never> {
   name: K;
@@ -48,13 +49,13 @@ interface WithdrawState {
   //   loading: boolean;
   step: WithdrawStep;
   babyPrice: number;
-  redeemRequest: PendingRequest[] | undefined
-  withdrawalAmount: number | undefined
+  redeemRequest: PendingRequest[] | undefined;
+  withdrawalAmount: number | undefined;
   showPreview(data: FormData): void;
   closePreview(): void;
   submitForm(): Promise<void>;
   resetForm(): void;
-  feeAmount:  number;
+  feeAmount: number;
   disabled?: {
     title: string;
     message: string;
@@ -66,7 +67,7 @@ const { StateProvider, useState: useWithdrawState } =
     // loading: true,
     step: { name: "initial" },
     babyPrice: 0,
-    feeAmount:  0,
+    feeAmount: 0,
     redeemRequest: [],
     withdrawalAmount: 0,
     showPreview: () => {},
@@ -78,37 +79,34 @@ const { StateProvider, useState: useWithdrawState } =
 
 function WithdrawState({ children }: PropsWithChildren) {
   const [step, setStep] = useState<WithdrawStep>({ name: "initial" });
-  const [feeAmount, setFeeAmount] = useState<number>(0)
+  const { orderAddress } = useParams();
+  const [feeAmount, setFeeAmount] = useState<number>(0);
   const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
   const { isGeoBlocked } = useHealthCheck();
   const { handleError } = useError();
   const { bech32Address } = useCosmosWallet();
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
-  const {
-    data: redeemRequest,
-    refetch: refetchRedeemRequest,
-  } = useCosmwasmQuery<PendingRequest[]>({
-    contractAddress:
-      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
-    queryMsg: {
-      get_redeem_request: {
-        user: bech32Address,
+  const { data: redeemRequest, refetch: refetchRedeemRequest } =
+    useCosmwasmQuery<PendingRequest[]>({
+      contractAddress: orderAddress!,
+      queryMsg: {
+        get_redeem_request: {
+          user: bech32Address,
+        },
       },
-    },
-  });
-  const {
-    data: withdrawalAmount,
-    refetch: refetcWithdrawlAmount,
-  } = useCosmwasmQuery<number>({
-    contractAddress:
-      "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
-    queryMsg: {
-      get_withdrawal_amount: {
-        user: bech32Address,
+      options: { enabled: !!orderAddress },
+    });
+  const { data: withdrawalAmount, refetch: refetcWithdrawlAmount } =
+    useCosmwasmQuery<number>({
+      contractAddress: orderAddress!,
+      queryMsg: {
+        get_withdrawal_amount: {
+          user: bech32Address,
+        },
       },
-    },
-  });
+      options: { enabled: !!orderAddress },
+    });
 
   const isDisabled = useMemo(() => {
     if (isGeoBlocked) {
@@ -124,7 +122,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       feeAmount,
     };
     setStep({ name: "preview", data: formData });
-  }, []);
+  }, [feeAmount]);
 
   const closePreview = useCallback(() => {
     setStep({ name: "initial" });
@@ -135,8 +133,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
       value: {
         sender: bech32Address,
-        contract:
-          "bbn16l8yy4y9yww56x4ds24fy0pdv5ewcc2crnw77elzfts272325hfqwpm4c3",
+        contract: orderAddress,
         msg: toUtf8(
           JSON.stringify({
             withdraw: {},
@@ -146,7 +143,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       },
     };
     return msg;
-  }, [bech32Address, withdrawalAmount]);
+  }, [bech32Address, orderAddress]);
 
   const submitForm = useCallback(async () => {
     if (step.name !== "preview" || !step.data) return;
@@ -170,13 +167,15 @@ function WithdrawState({ children }: PropsWithChildren) {
 
   useEffect(() => {
     let isMounted = true;
-    if (withdrawalAmount && withdrawalAmount >0) {
-
+    if (withdrawalAmount && withdrawalAmount > 0) {
       (async () => {
         try {
           const msg = createWithdrawMsg();
           const result = await estimateBbnGasFee(msg);
-          const fee = result.amount.reduce((sum, { amount }) => sum + Number(amount), 0);
+          const fee = result.amount.reduce(
+            (sum, { amount }) => sum + Number(amount),
+            0,
+          );
           if (isMounted) setFeeAmount(fee);
         } catch (error: any) {
           handleError({ error });
@@ -188,7 +187,13 @@ function WithdrawState({ children }: PropsWithChildren) {
     return () => {
       isMounted = false;
     };
-  }, [handleError, logger, estimateBbnGasFee, createWithdrawMsg, withdrawalAmount]);
+  }, [
+    handleError,
+    logger,
+    estimateBbnGasFee,
+    createWithdrawMsg,
+    withdrawalAmount,
+  ]);
 
   const resetForm = useCallback(() => {
     setStep({ name: "initial" });
