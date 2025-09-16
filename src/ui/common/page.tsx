@@ -7,7 +7,6 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { Activity } from "./components/Activity/Activity";
 import { Container } from "./components/Container/Container";
 import { MultistakingFormWrapper } from "./components/Multistaking/MultistakingForm/MultistakingFormWrapper";
-import { Rewards } from "./components/Rewards";
 import { Tabs } from "./components/Tabs";
 
 const Home = () => {
@@ -40,11 +39,6 @@ const Home = () => {
             id: "activity",
             label: "Activity",
             content: <Activity />,
-          },
-          {
-            id: "rewards",
-            label: "Rewards",
-            content: <Rewards />,
           },
         ]
       : []),
