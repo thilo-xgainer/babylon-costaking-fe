@@ -159,6 +159,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
       await refetchRedeemRequest();
+      await refetcWithdrawlAmount()
     } catch (error: any) {
       handleError({ error });
       logger.error(error);

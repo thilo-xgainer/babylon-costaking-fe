@@ -13,6 +13,13 @@ import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { Rewards } from "@/ui/common/components/Rewards";
 import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
+import { Information } from "./components/Infomation";
+import { CalculatedYield } from "./components/CalculatedYield";
+import { Rewards as RewardsSection } from "./components/Rewards";
+import { StakeInfo } from "./components/StakeInfo";
+import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
+import { formatTimeHistory } from "@/utils/format";
+import dayjs from "dayjs";
 
 type TabId = "stake" | "redeem" | "withdraw" | "rewards";
 
@@ -25,31 +32,27 @@ export default function Order() {
 }
 
 function OrderContent() {
-  const [activeTab, setActiveTab] = useState<TabId>("stake");
+  const [activeTab, setActiveTab] = useState<TabId>("redeem");
   const { connected } = useWalletConnect();
   const { isGeoBlocked } = useHealthCheck();
   const { bech32Address } = useCosmosWallet();
   const { orderAddress } = useParams();
   const { data: orderList } = useOrderList();
+  const { data: nextEpochTimestamp } = useEstimateEpoch();
 
   useEffect(() => {
     if (!connected) {
-      setActiveTab("stake");
+      setActiveTab("redeem");
     }
   }, [connected]);
 
   useEffect(() => {
     if (isGeoBlocked) {
-      setActiveTab("stake");
+      setActiveTab("redeem");
     }
   }, [isGeoBlocked, activeTab]);
 
   const tabItems = [
-    {
-      id: "stake",
-      label: "Stake",
-      content: <StakingForm isGeoBlocked={isGeoBlocked} />,
-    },
     {
       id: "redeem",
       label: "Redeem",
@@ -77,20 +80,12 @@ function OrderContent() {
     });
   }
 
-  const fallbackTabItems = [
-    {
-      id: "stake",
-      label: "Stake",
-      content: <StakingForm isGeoBlocked={isGeoBlocked} />,
-    },
-  ];
-
   const fallbackContent = (
     <Container
       as="main"
       className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
     >
-      <Tabs items={fallbackTabItems} defaultActiveTab="stake" />
+      <Information orderAddress={orderAddress ?? ""} />
     </Container>
   );
 
@@ -100,9 +95,26 @@ function OrderContent() {
         as="main"
         className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
       >
+        <Information orderAddress={orderAddress ?? ""} />
+
+        <div>
+          <StakingForm />
+          {nextEpochTimestamp && (
+            <div className="mt-2 flex flex-col items-center gap-1">
+              <p>Your delegation will be confirmed in the next Epoch,</p>
+              <p>
+                Estimated Date:{" "}
+                {dayjs(nextEpochTimestamp * 1000).format("DD/MM/YYYY, HH:mm")}
+              </p>
+            </div>
+          )}
+        </div>
+        <CalculatedYield />
+        <RewardsSection />
+        <StakeInfo />
         <Tabs
           items={tabItems}
-          defaultActiveTab="stake"
+          defaultActiveTab="redeem"
           activeTab={activeTab}
           onTabChange={(tabId) => setActiveTab(tabId as TabId)}
         />

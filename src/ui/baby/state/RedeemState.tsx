@@ -143,7 +143,7 @@ function RedeemState({ children }: PropsWithChildren) {
             .required("Enter BABY Amount to Redeem")
             .moreThan(0, "Redeem amount must be greater than 0")
             .lessThan(
-              stakedAmount,
+              stakedAmount + 1,
               "Redeem amount must be less than staked amount",
             )
             .test(

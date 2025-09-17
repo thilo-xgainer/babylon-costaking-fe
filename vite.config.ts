@@ -49,4 +49,8 @@ export default defineConfig({
     ),
     "process.env.NEXT_TELEMETRY_DISABLED": JSON.stringify("1"),
   },
+
+  server: {
+    host: true
+  }
 });

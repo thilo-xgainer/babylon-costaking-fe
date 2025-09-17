@@ -80,5 +80,6 @@ export enum BaseStakingStep {
   FEEDBACK_CANCEL = "feedback-cancel",
 }
 
-export const MARKETPLACE_CONTRACT_ADDRESS =
-  "bbn1r38w9kg337gu4t8ru9zlzmaugfuv08q7ja5wqnglvjk6epm3krus0mepeu";
+export const MARKETPLACE_CONTRACT_ADDRESS = "bbn19yzkfzgps9dyh3uggwyy900qarw9yuw6yuvcfw95gnqax475lfmsexz7rt"
+  // "bbn1r38w9kg337gu4t8ru9zlzmaugfuv08q7ja5wqnglvjk6epm3krus0mepeu";
+  //  "bbn13gzv2qmtuv8vmutj4ptn6ewq0vnrwjn6hkcmgyhfya8985suwufqkn7mqs"
