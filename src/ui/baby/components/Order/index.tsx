@@ -18,7 +18,6 @@ import { CalculatedYield } from "./components/CalculatedYield";
 import { Rewards as RewardsSection } from "./components/Rewards";
 import { StakeInfo } from "./components/StakeInfo";
 import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
-import { formatTimeHistory } from "@/utils/format";
 import dayjs from "dayjs";
 
 type TabId = "stake" | "redeem" | "withdraw" | "rewards";
