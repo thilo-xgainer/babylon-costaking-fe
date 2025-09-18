@@ -1,5 +1,7 @@
 import {
+  Dispatch,
   type PropsWithChildren,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -60,11 +62,13 @@ interface RedeemState {
   babyPrice: number;
   fields: string[];
   exchangeRate: number;
+  manualOrderAddress: string;
   showPreview(data: FormData): void;
   closePreview(): void;
   submitForm(): Promise<void>;
   resetForm(): void;
   calculateFee: (params: Omit<FormData, "feeAmount">) => Promise<number>;
+  setManualOrderAddress: Dispatch<SetStateAction<string>>;
   disabled?: {
     title: string;
     message: string;
@@ -80,37 +84,42 @@ const { StateProvider, useState: useRedeemState } =
     babyPrice: 0,
     fields: [],
     exchangeRate: 0,
+    manualOrderAddress: "",
     calculateFee: async () => 0,
     showPreview: () => {},
     closePreview: () => {},
     submitForm: async () => {},
     resetForm: () => {},
+    setManualOrderAddress: () => {},
     disabled: undefined,
   });
 
 function RedeemState({ children }: PropsWithChildren) {
+  const [manualOrderAddress, setManualOrderAddress] = useState<string>("");
   const [step, setStep] = useState<RedeemStep>({ name: "initial" });
   const { orderAddress } = useParams();
   const { signBbnTx, sendBbnTx, estimateBbnGasFee } = useBbnTransaction();
   const { isGeoBlocked } = useHealthCheck();
   const { handleError } = useError();
   const { bech32Address } = useCosmosWallet();
+
+  const contractAddress = orderAddress ?? manualOrderAddress;
   const { data: stakedAmount = 0, refetch: refetchStakedAmount } =
     useCosmwasmQuery({
-      contractAddress: orderAddress!,
+      contractAddress: contractAddress!,
       queryMsg: {
         get_user_staked: {
           user: bech32Address,
         },
       },
-      options: { enabled: !!orderAddress },
+      options: { enabled: !!contractAddress },
     });
   const { data: exchangeRate } = useCosmwasmQuery({
-    contractAddress: orderAddress!,
+    contractAddress: contractAddress!,
     queryMsg: {
       get_exchange_rate: {},
     },
-    options: { enabled: !!orderAddress },
+    options: { enabled: !!contractAddress },
   });
 
   const logger = useLogger();
@@ -196,7 +205,6 @@ function RedeemState({ children }: PropsWithChildren) {
       amount,
       feeAmount,
     };
-    console.log("formData: ", formData);
     setStep({ name: "preview", data: formData });
   }, []);
 
@@ -210,7 +218,7 @@ function RedeemState({ children }: PropsWithChildren) {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: {
           sender: bech32Address,
-          contract: orderAddress,
+          contract: contractAddress,
           msg: toUtf8(
             JSON.stringify({
               un_stake: {
@@ -223,7 +231,7 @@ function RedeemState({ children }: PropsWithChildren) {
       };
       return msg;
     },
-    [bech32Address, orderAddress],
+    [bech32Address, contractAddress],
   );
 
   const submitForm = useCallback(async () => {
@@ -297,6 +305,8 @@ function RedeemState({ children }: PropsWithChildren) {
       closePreview,
       disabled: isDisabled,
       exchangeRate,
+      manualOrderAddress,
+      setManualOrderAddress,
     };
   }, [
     availableBalance,
@@ -311,6 +321,8 @@ function RedeemState({ children }: PropsWithChildren) {
     closePreview,
     isDisabled,
     exchangeRate,
+    manualOrderAddress,
+    setManualOrderAddress,
   ]);
 
   return <StateProvider value={context}>{children}</StateProvider>;

@@ -8,7 +8,7 @@ import { FormFields } from "@/ui/common/state/StakingState";
 
 import { useRedeemState } from "../../state/RedeemState";
 import { RedeemModal } from "../RedeemModal";
-export const Redeem = ({
+export const RedeemCard = ({
   isGeoBlocked = false,
 }: {
   isGeoBlocked?: boolean;

@@ -110,7 +110,7 @@ export function useStakingService() {
         const orderAddress = res.events
           .find((el) => el.type === "instantiate")
           ?.attributes?.find((el) => el.key === "_contract_address")?.value;
-
+        
         if (!orderAddress) {
           throw "One user can create only one order";
         }
@@ -174,6 +174,7 @@ export function useStakingService() {
         };
 
         await sendBbnTx(await signBbnTx(createDelegationMsg));
+        console.log("var: 2",);
 
         addDelegation({
           stakingAmount: amount,

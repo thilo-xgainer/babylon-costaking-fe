@@ -8,7 +8,7 @@ import { Tabs } from "@/ui/common/components/Tabs";
 import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { PendingOperationsProvider } from "@/ui/baby/hooks/services/usePendingOperationsService";
 import StakingForm from "@/ui/baby/widgets/StakingForm";
-import { Redeem } from "@/ui/baby/components/RedeemCard";
+import { RedeemCard } from "@/ui/baby/components/RedeemCard";
 import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { Rewards } from "@/ui/common/components/Rewards";
@@ -55,7 +55,7 @@ function OrderContent() {
     {
       id: "redeem",
       label: "Redeem",
-      content: <Redeem isGeoBlocked={isGeoBlocked} />,
+      content: <RedeemCard isGeoBlocked={isGeoBlocked} />,
     },
     {
       id: "withdraw",

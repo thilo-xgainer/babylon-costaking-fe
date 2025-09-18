@@ -6,6 +6,7 @@ import NotFound from "./common/not-found";
 import BTCStaking from "./common/page";
 import { OrderList } from "./baby/components/OrderList";
 import Order from "./baby/components/Order";
+import { PortfolioPage } from "./baby/components/Portfolio";
 
 export const Router = () => {
   return (
@@ -17,6 +18,7 @@ export const Router = () => {
           <Route path="order" element={<OrderList />} />
           <Route path="order/:orderAddress" element={<Order />} />
         </Route>
+        <Route path="portfolio" element={<PortfolioPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
