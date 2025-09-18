@@ -4,7 +4,7 @@ import { toUtf8 } from "@cosmjs/encoding";
 
 import { getDelegationV2 } from "@/ui/common/api/getDelegationsV2";
 import {
-  MARKETPLACE_CONTRACT_ADDRESS,
+  // MARKETPLACE_CONTRACT_ADDRESS,
   ONE_SECOND,
 } from "@/ui/common/constants";
 import { useError } from "@/ui/common/context/Error/ErrorProvider";
@@ -45,7 +45,9 @@ export function useStakingService() {
   const { bech32Address } = useCosmosWallet();
   const { validators } = useValidatorState();
   const logger = useLogger();
-  const { refetch: refetchOrderList } = useOrderList({ enabled: false });
+  const { data: orderList, refetch: refetchOrderList } = useOrderList({
+    enabled: false,
+  });
 
   const calculateFeeAmount = useCallback(
     ({
@@ -90,29 +92,29 @@ export function useStakingService() {
         };
         setProcessing(true);
 
-        const createOrderMsg: MsgExecuteContractEncodeObject = {
-          typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-          value: {
-            sender: bech32Address,
-            contract: MARKETPLACE_CONTRACT_ADDRESS,
-            msg: toUtf8(
-              JSON.stringify({
-                create_order: {
-                  validator: validators[0].id,
-                },
-              }),
-            ),
-            funds: [],
-          },
-        };
+        // const createOrderMsg: MsgExecuteContractEncodeObject = {
+        //   typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        //   value: {
+        //     sender: bech32Address,
+        //     contract: MARKETPLACE_CONTRACT_ADDRESS,
+        //     msg: toUtf8(
+        //       JSON.stringify({
+        //         create_order: {
+        //           validator: validators[0].id,
+        //         },
+        //       }),
+        //     ),
+        //     funds: [],
+        //   },
+        // };
 
-        const res = await sendBbnTx(await signBbnTx(createOrderMsg));
-        const orderAddress = res.events
-          .find((el) => el.type === "instantiate")
-          ?.attributes?.find((el) => el.key === "_contract_address")?.value;
-        
-        if (!orderAddress) {
-          throw "One user can create only one order";
+        // const res = await sendBbnTx(await signBbnTx(createOrderMsg));
+        const orderAddress =
+          orderList.find((order) => order.owner === bech32Address)?.address ??
+          "";
+
+        if (orderAddress === "") {
+          throw "Order not found";
         }
         refetchOrderList();
 
@@ -174,7 +176,6 @@ export function useStakingService() {
         };
 
         await sendBbnTx(await signBbnTx(createDelegationMsg));
-        console.log("var: 2",);
 
         addDelegation({
           stakingAmount: amount,
