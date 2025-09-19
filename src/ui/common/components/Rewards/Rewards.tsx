@@ -13,6 +13,7 @@ import { useRewardsState } from "@/ui/baby/state/RewardState";
 import { ubbnToBaby } from "@/ui/common/utils/bbn";
 
 import { ClaimStatusModal } from "../Modals/ClaimStatusModal/ClaimStatusModal";
+import { maxDecimals } from "../../utils/maxDecimals";
 
 interface RewardItem {
   amount: string;
@@ -60,7 +61,7 @@ export function Rewards() {
 
   // BABY / tBABY reward
   const formattedRewardBaby = rewardBalance
-    ? ubbnToBaby(rewardBalance).toString()
+    ? maxDecimals(ubbnToBaby(rewardBalance), 6).toString()
     : "0";
   const babyIcon = /BABY$/i.test(bbnCoinSymbol)
     ? babyTokenIcon

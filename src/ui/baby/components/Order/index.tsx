@@ -1,6 +1,7 @@
 import { useWalletConnect } from "@babylonlabs-io/wallet-connector";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import dayjs from "dayjs";
 
 import { AuthGuard } from "@/ui/common/components/Common/AuthGuard";
 import { Container } from "@/ui/common/components/Container/Container";
@@ -13,12 +14,13 @@ import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { Rewards } from "@/ui/common/components/Rewards";
 import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
+
+import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
+
 import { Information } from "./components/Infomation";
 import { CalculatedYield } from "./components/CalculatedYield";
 import { Rewards as RewardsSection } from "./components/Rewards";
 import { StakeInfo } from "./components/StakeInfo";
-import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
-import dayjs from "dayjs";
 import { History } from "./components/History";
 
 type TabId = "stake" | "redeem" | "withdraw" | "rewards";
