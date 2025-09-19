@@ -1,10 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useEffect, useRef, useState } from "react";
+import { ThreeDotsMenuIcon } from "@babylonlabs-io/core-ui";
+
 import babyLogo from "@/ui/common/assets/baby.png";
 import { formatAddress } from "@/utils/format";
-import { ThreeDotsMenuIcon } from "@babylonlabs-io/core-ui";
-import { Order } from "./OrderTab";
-import { Redeem } from "./Redeem";
 import { useRedeemState } from "@/ui/baby/state/RedeemState";
+import { Order } from "@/ui/baby/hooks/services/useUserOrderList";
+import { maxDecimals } from "@/ui/common/utils/maxDecimals";
+import { ubbnToBaby } from "@/ui/common/utils/bbn";
+
+import { Redeem } from "./Redeem";
 
 interface Props {
   order: Order;
@@ -28,29 +33,33 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
     handleMouseLeave();
   }, [isModalOpen]);
 
+  // TODO: get exchange rate & calculate balance
   return (
     <div className="flex items-center py-4 pl-8">
       <div className="w-[18%] px-2 text-left">
         <a
-          href={`/order/${order.address}`}
+          href={`/order/${order.order}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mx-1 text-xl text-blue-500 no-underline hover:underline"
         >
-          {formatAddress(order.address)}
+          {formatAddress(order.order)}
         </a>
       </div>
-      <div className="w-[7%] px-2 text-left">{order.apr}%</div>
-      <div className="w-[15%] px-2 text-left">{order.btcAmount} BTC</div>
+      <div className="w-[7%] px-2 text-left">1%</div>
+      <div className="w-[15%] px-2 text-left">
+        {maxDecimals(order.btcAmount / 1e8, 8)} BTC
+      </div>
       <div className="flex w-[15%] items-center justify-start gap-1 px-2 text-left">
-        {order.stakedAmount}{" "}
+        {maxDecimals(ubbnToBaby(order.balance), 6)}{" "}
         <img src={babyLogo} className="h-5 w-5" alt="baby" />
       </div>
       <div className="flex w-[15%] items-center justify-start gap-1 px-2 text-left">
-        {order.userStaked} <img src={babyLogo} className="h-5 w-5" alt="baby" />
+        {maxDecimals(ubbnToBaby(order.pendingUnstaked), 6)}{" "}
+        <img src={babyLogo} className="h-5 w-5" alt="baby" />
       </div>
       <div className="flex w-[20%] items-center justify-start gap-1 px-2 text-left">
-        {order.withdrawalAmount}{" "}
+        {maxDecimals(ubbnToBaby(order.withdrawable), 6)}{" "}
         <img src={babyLogo} className="h-5 w-5" alt="baby" />
       </div>
       <div className="flex w-[10%] items-center justify-end px-2">
@@ -69,14 +78,14 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
               <div
                 className="cursor-pointer rounded-se-lg rounded-ss-lg bg-[#1b5f79] px-4 py-2 text-center hover:bg-[#237c9f]"
                 onClick={() => {
-                  setManualOrderAddress(order.address);
+                  setManualOrderAddress(order.order);
                   setIsModalOpen(true);
                 }}
               >
                 Redeem
               </div>
               <div
-                className={`cursor-pointer rounded-ee-lg rounded-es-lg px-4 py-2 text-center ${order.withdrawalAmount === 0 ? "bg-[#b9cdd5]" : "bg-[#1b5f79] hover:bg-[#237c9f]"}`}
+                className={`cursor-pointer rounded-ee-lg rounded-es-lg px-4 py-2 text-center ${order.withdrawable === 0 ? "bg-[#b9cdd5]" : "bg-[#1b5f79] hover:bg-[#237c9f]"}`}
               >
                 Withdraw
               </div>

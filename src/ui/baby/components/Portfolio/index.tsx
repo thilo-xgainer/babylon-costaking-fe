@@ -1,9 +1,11 @@
+import { useState } from "react";
+
 import { Container } from "@/ui/common/components/Container/Container";
+import { Tabs } from "@/ui/common/components/Tabs";
+
 import { Information } from "./components/Information";
 import { MyAssets } from "./components/MyAssets";
 import { OrderTab } from "./components/OrderTab";
-import { Tabs } from "@/ui/common/components/Tabs";
-import { useState } from "react";
 import { BtcStaking } from "./components/BtcStaking";
 
 type TabId = "baby" | "btc";

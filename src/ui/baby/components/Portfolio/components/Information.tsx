@@ -1,11 +1,17 @@
-import { useBTCWallet } from "@/ui/common/context/wallet/BTCWalletProvider";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { formatAddress } from "@/utils/format";
 import { Avatar, CopyIcon } from "@babylonlabs-io/core-ui";
 import { useWidgetState } from "@babylonlabs-io/wallet-connector";
 
+import { useBTCWallet } from "@/ui/common/context/wallet/BTCWalletProvider";
+import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+import { formatAddress } from "@/utils/format";
+import { useUserAssets } from "@/ui/baby/hooks/services/useUserAssets";
+import { usePrices } from "@/ui/common/hooks/client/api/usePrices";
+import { formatCurrency } from "@/ui/common/utils/formatCurrency";
+
 export const Information = () => {
   const { selectedWallets } = useWidgetState();
+  const { btc, baby } = useUserAssets();
+  const { data: prices } = usePrices();
 
   const { address: btcAddress } = useBTCWallet();
   const { bech32Address } = useCosmosWallet();
@@ -72,7 +78,14 @@ export const Information = () => {
         </div>
       </div>
       <div className="flex w-1/2 flex-col items-center gap-1">
-        <p className="text-2xl font-semibold dark:text-white">$1509.98</p>
+        <p className="text-2xl font-semibold dark:text-white">
+          {formatCurrency(
+            btc * (prices?.BTC ?? 0) + baby * (prices?.BABY ?? 0),
+            {
+              precision: 2,
+            },
+          )}
+        </p>
         <p>Total Position Value</p>
       </div>
     </div>
