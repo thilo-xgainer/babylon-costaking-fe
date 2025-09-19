@@ -50,8 +50,6 @@ export const OrderInfo = () => {
       setStep({ name: "loading" });
       const result = await sendBbnTx(await signBbnTx(createOrderMsg));
 
-      await sendBbnTx(await signBbnTx(createOrderMsg));
-
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
 
       toast.success("Create order complete");
