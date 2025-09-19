@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { PaginationType } from "@/types/type";
-import { ShadcnPagination } from "../../ShadcnPagination";
-import { HistoryItem } from "./HistoryItem";
 import { usePortfolioHistory } from "@/ui/common/hooks/client/api/usePortfolioHistory";
 import {
   Select,
@@ -13,6 +12,10 @@ import {
   SelectValue,
 } from "@/ui/common/components/Select";
 import { EmptyIcon } from "@/ui/icons/EmptyIcon";
+
+import { ShadcnPagination } from "../../ShadcnPagination";
+
+import { HistoryItem } from "./HistoryItem";
 
 const typesFilter: {
   label: string;
@@ -48,20 +51,12 @@ export const History = () => {
     totalDocument: undefined,
   });
   const { bech32Address } = useCosmosWallet();
-  const { data: histories, isLoading: isHistoryLoading } = usePortfolioHistory({
-    enabled: true,
+  const { data: histories } = usePortfolioHistory({
     userAddress: bech32Address,
     page: pagination.currentPage,
     typeFilter,
   });
 
-  useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      totalPage: histories ? histories.pagination.totalPages : 1,
-      totalDocument: histories ? histories.pagination.total : 1,
-    }));
-  }, [isHistoryLoading]);
   return (
     <div>
       <p>Histories</p>
@@ -119,10 +114,12 @@ export const History = () => {
             )}
           </div>
         </div>
-        <ShadcnPagination
-          pagination={pagination}
-          setPagination={setPagination}
-        />
+        {histories && (
+          <ShadcnPagination
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        )}
       </div>
     </div>
   );

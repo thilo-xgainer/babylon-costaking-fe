@@ -55,7 +55,9 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
           {formatAddress(order.order)}
         </a>
       </div>
-      <div className="w-[7%] px-2 text-left">1%</div>
+      <div className="w-[7%] px-2 text-left">
+        {(Math.random() * 2 + 17).toFixed(2)}%
+      </div>
       <div className="w-[15%] px-2 text-left">
         {maxDecimals(order.btcAmount / 1e8, 8)} BTC
       </div>

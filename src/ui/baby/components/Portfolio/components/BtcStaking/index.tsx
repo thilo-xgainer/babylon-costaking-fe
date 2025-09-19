@@ -4,12 +4,11 @@ import { Delegations } from "@/ui/common/components/Delegations/Delegations";
 import { ActivityList } from "@/ui/common/components/Activity/components/ActivityList";
 
 export const BtcStaking = () => {
+
   return (
     <div>
-      <a
-        href="/btc"
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        to={`/order/${order}`}
         className="mx-1 text-xl text-blue-500 no-underline"
       >
         Bitcoin
