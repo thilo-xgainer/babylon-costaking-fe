@@ -142,7 +142,6 @@ function RedeemState({ children }: PropsWithChildren) {
     () => createMinAmountValidator(MIN_STAKING_AMOUNT),
     [],
   );
-  console.log(stakedAmount, availableRedeemAmount)
   // Subtract the pending stake amount from the balance
   const availableBalance = BigInt(availableRedeemAmount ?? 0);
   const isDisabled = useMemo(() => {
@@ -153,7 +152,7 @@ function RedeemState({ children }: PropsWithChildren) {
       };
     }
   }, [isGeoBlocked]);
-
+  console.log("availableBalance", babylon.utils.ubbnToBaby(availableBalance))
   const fieldSchemas = useMemo(
     () =>
       [
@@ -164,10 +163,10 @@ function RedeemState({ children }: PropsWithChildren) {
             .typeError("Redeem amount must be a valid number")
             .required("Enter BABY Amount to Redeem")
             .moreThan(0, "Redeem amount must be greater than 0")
-            .max(
-              babylon.utils.ubbnToBaby(availableBalance),
-              "Redeem amount must be less than staked amount",
-            )
+            // .max(
+            //   babylon.utils.ubbnToBaby(stakedAmount),
+            //   "Redeem amount must be less than staked amount",
+            // )
             .test(
               "invalidMinAmount",
               `Minimum redeem amount is ${MIN_STAKING_AMOUNT} BABY`,
