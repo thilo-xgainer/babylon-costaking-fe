@@ -4,6 +4,9 @@ import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 import { formatAddress } from "@/utils/format";
+import { Delegations } from "@/ui/common/components/Delegations/Delegations";
+import { ActivityList } from "@/ui/common/components/Activity/components/ActivityList";
+
 export const BtcStaking = () => {
   const { bech32Address } = useCosmosWallet();
 
@@ -26,17 +29,6 @@ export const BtcStaking = () => {
         Bitcoin
       </a>
       <div className="bg-[#f9f9f9] px-4 py-3">
-        <div className="flex items-center gap-1">
-          <p>Order: </p>
-          <a
-            href={`/order/${order}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mx-1 no-underline"
-          >
-            {formatAddress(order ?? "")}
-          </a>
-        </div>
         <div className="flex items-center">
           <div className="w-1/2 bg-[#f9f9f9] p-4 dark:bg-[#252525]">
             <p className="text-center text-sm font-bold dark:text-white">
@@ -57,11 +49,18 @@ export const BtcStaking = () => {
             </div>
           </div>
         </div>
-        {/* <div className="flex items-center">
-          <div>
-            <p className="text-center text-sm font-bold dark:text-white">Stake BTC</p>
-          </div>
-        </div> */}
+        <a
+          href="/btc"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer bg-[#d6d6d6] px-4 py-2 hover:opacity-80"
+        >
+          Deposit
+        </a>
+        <div className="mx-auto w-3/4">
+          <Delegations />
+          <ActivityList />
+        </div>
       </div>
     </div>
   );
