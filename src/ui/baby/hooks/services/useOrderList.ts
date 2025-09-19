@@ -1,4 +1,4 @@
-import { toBech32 } from "@cosmjs/encoding";
+// import { toBech32 } from "@cosmjs/encoding";
 
 import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
@@ -21,8 +21,9 @@ export function useOrderList(options?: { enabled?: boolean }) {
     ...result,
     data:
       result?.data?.map((el) => ({
-        address: toBech32("bbn", Buffer.from(el.order, "hex")),
+        address: el.order,
         owner: el.owner,
       })) ?? [],
   };
 }
+// address: toBech32("bbn", Buffer.from(el.order, "hex")),

@@ -18,6 +18,7 @@ export const SimplifiedHeader = () => {
             <Nav>
               <NavItem title="BTC Staking" to="/btc" />
               <NavItem title="Order" to="/order" />
+              <NavItem title="Portfolio" to="/portfolio"/>
             </Nav>
           </div>
         )}

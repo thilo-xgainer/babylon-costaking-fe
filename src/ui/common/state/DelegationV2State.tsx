@@ -17,7 +17,6 @@ import {
 import { createStateUtils } from "@/ui/common/utils/createStateUtils";
 import { getDelegationsV2LocalStorageKey } from "@/ui/common/utils/local_storage/getDelegationsLocalStorageKey";
 
-import { useCosmosWallet } from "../context/wallet/CosmosWalletProvider";
 import { useDelegationsV2 } from "../hooks/client/api/useDelegationsV2";
 import { useDelegationStorage } from "../hooks/storage/useDelegationStorage";
 
@@ -67,7 +66,6 @@ export function DelegationV2State({ children }: PropsWithChildren) {
     false,
   );
   const { publicKeyNoCoord } = useBTCWallet();
-  const { bech32Address } = useCosmosWallet();
   const [delegationV2StepOptions, setDelegationV2StepOptions] =
     useState<EventData>();
   const eventBus = useEventBus();
@@ -79,7 +77,7 @@ export function DelegationV2State({ children }: PropsWithChildren) {
     isLoading,
     hasNextPage,
     refetch,
-  } = useDelegationsV2(!showLinkedDelegations ? bech32Address : undefined);
+  } = useDelegationsV2();
   // States
   const { delegations, addPendingDelegation, updateDelegationStatus } =
     useDelegationStorage(

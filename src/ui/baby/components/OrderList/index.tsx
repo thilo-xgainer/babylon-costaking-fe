@@ -1,10 +1,10 @@
 import { Link } from "react-router";
 
-import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
 import { BABYLON_EXPLORER } from "@/ui/common/constants";
+import { useListOrder } from "@/ui/common/hooks/client/api/useListOrder";
 
 export function OrderList() {
-  const { data } = useOrderList();
+  const { data } = useListOrder();
   return (
     <div>
       <div className="mb-4 text-lg font-bold text-accent-primary">
@@ -23,7 +23,7 @@ export function OrderList() {
         </thead>
 
         <tbody>
-          {data.map((order) => (
+          {(data ?? []).map((order) => (
             <tr
               key={order.address}
               className="bg-surface text-sm text-accent-primary odd:bg-secondary-highlight"

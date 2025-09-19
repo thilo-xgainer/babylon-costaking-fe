@@ -1,6 +1,7 @@
 import { useWalletConnect } from "@babylonlabs-io/wallet-connector";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import dayjs from "dayjs";
 
 import { AuthGuard } from "@/ui/common/components/Common/AuthGuard";
 import { Container } from "@/ui/common/components/Container/Container";
@@ -8,11 +9,18 @@ import { Tabs } from "@/ui/common/components/Tabs";
 import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { PendingOperationsProvider } from "@/ui/baby/hooks/services/usePendingOperationsService";
 import StakingForm from "@/ui/baby/widgets/StakingForm";
-import { Redeem } from "@/ui/baby/components/RedeemCard";
+import { RedeemCard } from "@/ui/baby/components/RedeemCard";
 import { WithdrawCard } from "@/ui/baby/components/WithdrawCard";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { Rewards } from "@/ui/common/components/Rewards";
 import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
+
+import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
+
+import { Information } from "./components/Infomation";
+import { CalculatedYield } from "./components/CalculatedYield";
+import { StakeInfo } from "./components/StakeInfo";
+import { History } from "./components/History";
 
 type TabId = "stake" | "redeem" | "withdraw" | "rewards";
 
@@ -25,35 +33,31 @@ export default function Order() {
 }
 
 function OrderContent() {
-  const [activeTab, setActiveTab] = useState<TabId>("stake");
+  const [activeTab, setActiveTab] = useState<TabId>("redeem");
   const { connected } = useWalletConnect();
   const { isGeoBlocked } = useHealthCheck();
   const { bech32Address } = useCosmosWallet();
   const { orderAddress } = useParams();
   const { data: orderList } = useOrderList();
+  const { data: nextEpochTimestamp } = useEstimateEpoch();
 
   useEffect(() => {
     if (!connected) {
-      setActiveTab("stake");
+      setActiveTab("redeem");
     }
   }, [connected]);
 
   useEffect(() => {
     if (isGeoBlocked) {
-      setActiveTab("stake");
+      setActiveTab("redeem");
     }
   }, [isGeoBlocked, activeTab]);
 
   const tabItems = [
     {
-      id: "stake",
-      label: "Stake",
-      content: <StakingForm isGeoBlocked={isGeoBlocked} />,
-    },
-    {
       id: "redeem",
       label: "Redeem",
-      content: <Redeem isGeoBlocked={isGeoBlocked} />,
+      content: <RedeemCard isGeoBlocked={isGeoBlocked} />,
     },
     {
       id: "withdraw",
@@ -77,20 +81,12 @@ function OrderContent() {
     });
   }
 
-  const fallbackTabItems = [
-    {
-      id: "stake",
-      label: "Stake",
-      content: <StakingForm isGeoBlocked={isGeoBlocked} />,
-    },
-  ];
-
   const fallbackContent = (
     <Container
       as="main"
       className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
     >
-      <Tabs items={fallbackTabItems} defaultActiveTab="stake" />
+      <Information orderAddress={orderAddress ?? ""} />
     </Container>
   );
 
@@ -100,12 +96,30 @@ function OrderContent() {
         as="main"
         className="mx-auto flex max-w-[760px] flex-1 flex-col gap-[3rem] pb-24"
       >
+        <Information orderAddress={orderAddress ?? ""} />
+
+        <div>
+          <StakingForm />
+          {nextEpochTimestamp && (
+            <div className="mt-2 flex flex-col items-center gap-1">
+              <p>Your delegation will be confirmed in the next Epoch,</p>
+              <p>
+                Estimated Date:{" "}
+                {dayjs(nextEpochTimestamp * 1000).format("DD/MM/YYYY, HH:mm")}
+              </p>
+            </div>
+          )}
+        </div>
+        <CalculatedYield />
+        {/* <RewardsSection /> */}
+        <StakeInfo />
         <Tabs
           items={tabItems}
-          defaultActiveTab="stake"
+          defaultActiveTab="redeem"
           activeTab={activeTab}
           onTabChange={(tabId) => setActiveTab(tabId as TabId)}
         />
+        <History />
       </Container>
     </AuthGuard>
   );

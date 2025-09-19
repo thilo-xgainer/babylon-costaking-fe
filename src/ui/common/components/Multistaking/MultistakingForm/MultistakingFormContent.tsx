@@ -10,6 +10,7 @@ import { FinalityProvidersSection } from "./FinalityProvidersSection";
 import { FormAlert } from "./FormAlert";
 import { StakingFeesSection } from "./StakingFeesSection";
 import { SubmitButton } from "./SubmitButton";
+import { OrderInfo } from "./OrderInfo";
 
 export function MultistakingFormContent() {
   const { stakingInfo, blocked: isGeoBlocked, disabled } = useStakingState();
@@ -25,8 +26,8 @@ export function MultistakingFormContent() {
 
       <HiddenField name="feeRate" defaultValue="0" />
       <HiddenField name="feeAmount" defaultValue="0" />
-
-      <div className="flex flex-col gap-2">
+      <OrderInfo />
+      <div className="mt-2 flex flex-col gap-2">
         <FinalityProvidersSection />
         <AmountSection />
         <StakingFeesSection />

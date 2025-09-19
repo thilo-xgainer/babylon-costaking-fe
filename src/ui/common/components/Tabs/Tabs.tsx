@@ -70,7 +70,7 @@ export const Tabs = ({
       </div>
 
       <div
-        className="mt-6 min-h-[450px]"
+        className="mt-6"
         role="tabpanel"
         id={`panel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
