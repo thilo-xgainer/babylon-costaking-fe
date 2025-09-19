@@ -4,6 +4,7 @@ import { toUtf8 } from "@cosmjs/encoding";
 
 import { getDelegationV2 } from "@/ui/common/api/getDelegationsV2";
 import {
+  MARKETPLACE_CONTRACT_ADDRESS,
   // MARKETPLACE_CONTRACT_ADDRESS,
   ONE_SECOND,
 } from "@/ui/common/constants";
@@ -31,6 +32,7 @@ import { useOrderList } from "@/ui/baby/hooks/services/useOrderList";
 import { useBbnTransaction } from "../client/rpc/mutation/useBbnTransaction";
 
 import { useTransactionService } from "./useTransactionService";
+import { useCosmwasmQuery } from "../client/useCosmwasmQuery";
 
 export function useStakingService() {
   const { setFormData, goToStep, setProcessing, setVerifiedDelegation, reset } =
@@ -45,7 +47,16 @@ export function useStakingService() {
   const { bech32Address } = useCosmosWallet();
   const { validators } = useValidatorState();
   const logger = useLogger();
-  const { data: orderList, refetch: refetchOrderList } = useOrderList({
+
+  const { data: orderAddress } = useCosmwasmQuery({
+    contractAddress: MARKETPLACE_CONTRACT_ADDRESS,
+    queryMsg: {
+      get_order_from_owner: {
+        owner: bech32Address,
+      },
+    },
+  });
+  const { refetch: refetchOrderList } = useOrderList({
     enabled: false,
   });
 
@@ -109,11 +120,8 @@ export function useStakingService() {
         // };
 
         // const res = await sendBbnTx(await signBbnTx(createOrderMsg));
-        const orderAddress =
-          orderList.find((order) => order.owner === bech32Address)?.address ??
-          "";
 
-        if (orderAddress === "") {
+        if (orderAddress === "" || !orderAddress) {
           throw "Order not found";
         }
         refetchOrderList();

@@ -1,6 +1,10 @@
 import btcLogo from "@/ui/common/assets/bitcoin.png";
 import babyLogo from "@/ui/common/assets/baby-token.svg";
 import React from "react";
+import { useParams } from "react-router";
+import { useOrderDetail } from "@/ui/common/hooks/client/api/useOrderDetail";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
+import { ubbnToBaby } from "@/ui/common/utils/bbn";
 
 interface AprProps {
   type: "btc" | "baby";
@@ -10,7 +14,7 @@ interface AprProps {
 
 const Apr: React.FC<AprProps> = ({ type, apr, stakedAmount }) => {
   return (
-    <div className="bg-[#f9f9f9] dark:bg-[#252525] p-4 w-1/2 flex flex-col gap-3">
+    <div className="flex w-1/2 flex-col gap-3 bg-[#f9f9f9] p-4 dark:bg-[#252525]">
       <div className="flex w-full items-center justify-between">
         <p>Staked {type.toUpperCase()}</p>
         <img
@@ -31,13 +35,33 @@ const Apr: React.FC<AprProps> = ({ type, apr, stakedAmount }) => {
 };
 
 export const CalculatedYield = () => {
+  const { orderAddress } = useParams();
+  const { data: orderDetail } = useOrderDetail({
+    enabled: true,
+    orderAddress: orderAddress ?? "",
+  });
+  const { data: tokenDeposited } = useCosmwasmQuery({
+    contractAddress: orderAddress ?? "",
+    queryMsg: {
+      get_total_token_staked: {},
+    },
+  });
+
   return (
     <div>
       <p>Calculated Yields</p>
-      <div className="flex items-center relative">
-        <Apr type="btc" apr={0.5} stakedAmount={5} />
-        <Apr type="baby" apr={6} stakedAmount={25} />
-        <div className="absolute w-[1px] h-[65%] top-4 bot-4 left-1/2 right-1/2 bg-[#dadada]"></div>
+      <div className="relative flex items-center">
+        <Apr
+          type="btc"
+          apr={0.5}
+          stakedAmount={orderDetail ? orderDetail[0].btcAmount / 1e8 : 0}
+        />
+        <Apr
+          type="baby"
+          apr={6}
+          stakedAmount={ubbnToBaby(tokenDeposited ?? 0)}
+        />
+        <div className="bot-4 absolute left-1/2 right-1/2 top-4 h-[65%] w-[1px] bg-[#dadada]"></div>
       </div>
     </div>
   );

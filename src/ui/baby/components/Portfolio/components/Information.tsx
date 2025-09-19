@@ -14,7 +14,7 @@ export const Information = () => {
     navigator.clipboard.writeText(type === "btc" ? btcAddress : bech32Address);
   };
   return (
-    <div className="flex items-center bg-[#f9f9f9] p-8">
+    <div className="flex items-center bg-[#f9f9f9] p-8 dark:bg-[#252525]">
       <div className="flex w-1/2 flex-col gap-3 border-r-[1px] border-[#e4e3e3] pr-5">
         {selectedWallets["BTC"] ? (
           <div className="flex items-center gap-5">

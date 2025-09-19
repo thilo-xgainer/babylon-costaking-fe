@@ -1,7 +1,20 @@
 import babyLogo from "@/ui/common/assets/baby-token.svg";
 import btcLogo from "@/ui/common/assets/bitcoin.png";
+import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
+import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 import { formatAddress } from "@/utils/format";
 export const BtcStaking = () => {
+  const { bech32Address } = useCosmosWallet();
+
+  const { data: order } = useCosmwasmQuery<string>({
+    contractAddress: MARKETPLACE_CONTRACT_ADDRESS,
+    queryMsg: {
+      get_order_from_owner: {
+        owner: bech32Address,
+      },
+    },
+  });
   return (
     <div>
       <a
@@ -16,14 +29,12 @@ export const BtcStaking = () => {
         <div className="flex items-center gap-1">
           <p>Order: </p>
           <a
-            href={`/order/bbn1ms8r95qxdc2rvr609nmulsm46dshhxrmnn45ghgzf7mqrcfkkehssxv74t`}
+            href={`/order/${order}`}
             target="_blank"
             rel="noopener noreferrer"
             className="mx-1 no-underline"
           >
-            {formatAddress(
-              "bbn1ms8r95qxdc2rvr609nmulsm46dshhxrmnn45ghgzf7mqrcfkkehssxv74t",
-            )}
+            {formatAddress(order ?? "")}
           </a>
         </div>
         <div className="flex items-center">

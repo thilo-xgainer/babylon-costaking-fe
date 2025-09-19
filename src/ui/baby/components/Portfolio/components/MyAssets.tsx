@@ -45,7 +45,7 @@ export const MyAssets = () => {
   return (
     <div>
       <p>My Assets</p>
-      <div className="flex w-full flex-col items-center gap-2 bg-[#f9f9f9]">
+      <div className="flex w-full flex-col items-center gap-2 bg-[#f9f9f9] dark:bg-[#252525]">
         <AssetItem
           token="btc"
           amount={323000.45}

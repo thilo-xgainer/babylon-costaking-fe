@@ -28,7 +28,7 @@ export const RedeemCard = ({
   return (
     <Form
       schema={formSchema}
-      className="flex flex-col bg-[#f9f9f9]"
+      className="flex flex-col bg-[#f9f9f9] dark:bg-[#252525]"
       onSubmit={handlePreview}
     >
       <AmountField balance={availableBalance} price={babyPrice} />

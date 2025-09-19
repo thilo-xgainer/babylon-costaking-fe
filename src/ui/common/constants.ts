@@ -18,6 +18,8 @@ export const DOCUMENTATION_LINKS = {
     "https://babylonlabs.io/blog/technical-preliminaries-of-bitcoin-staking",
 } as const;
 
+export const API_END_POINT = "https://api-staging.b14g.xyz/babylon-costaking";
+
 export const BBN_FEE_AMOUNT = process.env.REACT_APP_BBN_FEE_AMOUNT;
 
 export const MEMPOOL_API =
