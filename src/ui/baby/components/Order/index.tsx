@@ -21,6 +21,7 @@ import { Information } from "./components/Infomation";
 import { CalculatedYield } from "./components/CalculatedYield";
 import { Rewards as RewardsSection } from "./components/Rewards";
 import { StakeInfo } from "./components/StakeInfo";
+import { History } from "./components/History";
 
 type TabId = "stake" | "redeem" | "withdraw" | "rewards";
 
@@ -119,6 +120,7 @@ function OrderContent() {
           activeTab={activeTab}
           onTabChange={(tabId) => setActiveTab(tabId as TabId)}
         />
+        <History />
       </Container>
     </AuthGuard>
   );
