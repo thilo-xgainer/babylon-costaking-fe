@@ -7,12 +7,6 @@ export const BtcStaking = () => {
 
   return (
     <div>
-      <Link
-        to={`/order/${order}`}
-        className="mx-1 text-xl text-blue-500 no-underline"
-      >
-        Bitcoin
-      </a>
       <div className="bg-[#f9f9f9] px-4 py-3">
         <div className="flex items-center">
           <div className="w-1/2 bg-[#f9f9f9] p-4 dark:bg-[#252525]">

@@ -155,7 +155,8 @@ export const History = () => {
             {(
               (activeTab === "history"
                 ? histories?.data
-                : userHistories?.data) ?? []).length === 0 ? (
+                : userHistories?.data) ?? []
+            ).length === 0 ? (
               <div className="mt-5 flex flex-col items-center gap-6">
                 <EmptyIcon />
                 <p className="text-2xl dark:text-white">
@@ -163,24 +164,19 @@ export const History = () => {
                 </p>
               </div>
             ) : (
-              (histories?.data ?? []
-            ).map((history) => (
+              (histories?.data ?? []).map((history) => (
                 <HistoryItem key={history.hash} history={history} />
               ))
             )}
           </div>
         </div>
-        <ShadcnPagination
-          pagination={pagination}
-          setPagination={setPagination}
-        />
+        {histories && (
+          <ShadcnPagination
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        )}
       </div>
-      {histories && (
-        <ShadcnPagination
-          pagination={pagination}
-          setPagination={setPagination}
-        />
-      )}
     </div>
   );
 };
