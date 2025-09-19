@@ -28,7 +28,10 @@ export function formatCurrency(
 
   const formatted = currencyValue.toLocaleString(
     "en",
-    format ?? { maximumFractionDigits: precision },
+    format ?? {
+      maximumFractionDigits: precision,
+      minimumFractionDigits: precision,
+    },
   );
 
   return `${prefix}${formatted}`;

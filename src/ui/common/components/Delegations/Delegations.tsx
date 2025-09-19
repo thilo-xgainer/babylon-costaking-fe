@@ -74,6 +74,7 @@ export const Delegations = () => {
     hasMoreDelegations,
     isLoading,
   } = useDelegationState();
+  console.log("🚀 ~ Delegations ~ delegations:", delegations);
 
   const { setDelegationStepOptions } = useDelegationState();
 
