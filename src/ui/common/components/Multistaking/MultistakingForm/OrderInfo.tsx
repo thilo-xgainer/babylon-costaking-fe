@@ -50,8 +50,6 @@ export const OrderInfo = () => {
       setStep({ name: "loading" });
       const result = await sendBbnTx(await signBbnTx(createOrderMsg));
 
-      await sendBbnTx(await signBbnTx(createOrderMsg));
-
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
 
       toast.success("Create order complete");
@@ -65,7 +63,12 @@ export const OrderInfo = () => {
 
   return (
     <div className="bg-[#f9f9f9] p-4 dark:bg-[#252525]">
-      <CreateOrderModal step={step} />
+      <CreateOrderModal
+        step={step}
+        closeModal={() => {
+          setStep({ name: "initial" });
+        }}
+      />
 
       <p>Your Order</p>
       {order ? (
