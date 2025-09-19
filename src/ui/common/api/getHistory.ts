@@ -28,13 +28,26 @@ export type OrderHistory = {
 
 export const getOrderHistory = async (
   orderAddress: string,
-  userAddress: string,
   page: number,
   limit: number,
   typeFilter: string,
 ): Promise<OrderHistory> => {
   const response = await fetch(
-    `${API_END_POINT}/history/order/${orderAddress}?page=${page}&limit=${limit}${typeFilter !== "all" ? `&type=${typeFilter}` : ""}${userAddress !== "" ? `&user=${userAddress}` : ""}`,
+    `${API_END_POINT}/history/order/${orderAddress}?page=${page}&limit=${limit}${typeFilter !== "all" ? `&type=${typeFilter}` : ""}`,
+  );
+  const data = await response.json();
+  return data;
+};
+
+export const getUserHistory = async (
+  userAddress: string,
+  page: number,
+  limit: number,
+  typeFilter: string,
+  orderAddress?: string,
+): Promise<OrderHistory> => {
+  const response = await fetch(
+    `${API_END_POINT}/history/user/${userAddress}?page=${page}&limit=${limit}${typeFilter !== "all" ? `&type=${typeFilter}` : ""}${orderAddress !== "" ? `&order=${orderAddress}` : ""}`,
   );
   const data = await response.json();
   return data;

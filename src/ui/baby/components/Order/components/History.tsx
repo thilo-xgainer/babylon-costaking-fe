@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+import { useUserHistory } from "@/ui/common/hooks/client/useUserHistory";
 
 import { ShadcnPagination } from "../../ShadcnPagination";
 
@@ -73,9 +74,17 @@ export const History = () => {
   const { orderAddress } = useParams();
   const { data: histories } = useOrderHistory({
     orderAddress: orderAddress ?? "",
-    userAddress: activeTab === "my_history" ? bech32Address : "",
     page: pagination.currentPage,
     typeFilter,
+    enabled: activeTab === "history",
+  });
+
+  const { data: userHistories } = useUserHistory({
+    userAddress: bech32Address,
+    orderAddress: orderAddress ?? "",
+    page: pagination.currentPage,
+    typeFilter,
+    enabled: activeTab === "my_history" && !!bech32Address,
   });
 
   return (
@@ -90,10 +99,11 @@ export const History = () => {
                 onClick={() => {
                   if (activeTab !== tab.id) {
                     setActiveTab(tab.id);
-                    setPagination((prev) => ({
-                      ...prev,
+                    setPagination({
                       currentPage: 1,
-                    }));
+                      totalPage: 1,
+                      totalDocument: undefined,
+                    });
                   }
                 }}
               >
@@ -141,7 +151,11 @@ export const History = () => {
               <div className="w-[15%] px-2 text-right">Amount</div>
               <div className="w-[25%] px-2 text-center">TxHash</div>
             </div>
-            {(histories?.data ?? []).map((history) => (
+            {(
+              (activeTab === "history"
+                ? histories?.data
+                : userHistories?.data) ?? []
+            ).map((history) => (
               <HistoryItem key={history.hash} history={history} />
             ))}
           </div>
