@@ -1,22 +1,21 @@
-import {  useFormContext } from "@babylonlabs-io/core-ui";
-
 import { LoadingModal } from "../../components/LoadingModal";
 import { SuccessModal } from "../../components/SuccessModal";
 interface Props {
   step: any;
+  closeModal: () => void;
 }
 
-export function CreateOrderModal({ step }: Props) {
-  const { reset } = useFormContext();
-//   const { data: networkInfo } = useNetworkInfo();
-//   const confirmationDepth =
-//     networkInfo?.params.btcEpochCheckParams?.latestParam
-//       ?.btcConfirmationDepth || DEFAULT_CONFIRMATION_DEPTH;
-//   const processingHours = Math.ceil(confirmationDepth / 6);
-//   const processingHourLabel = processingHours === 1 ? "hour" : "hours";
-//   const warnings = [
-//     `The staking transaction may take up to ~${processingHours} ${processingHourLabel} to process. Funds will not be deducted instantly; a sufficient available balance must be maintained until the transaction is confirmed and the deduction is finalized.`,
-//   ];
+export function CreateOrderModal({ step, closeModal }: Props) {
+  // const { reset } = useFormContext();
+  //   const { data: networkInfo } = useNetworkInfo();
+  //   const confirmationDepth =
+  //     networkInfo?.params.btcEpochCheckParams?.latestParam
+  //       ?.btcConfirmationDepth || DEFAULT_CONFIRMATION_DEPTH;
+  //   const processingHours = Math.ceil(confirmationDepth / 6);
+  //   const processingHourLabel = processingHours === 1 ? "hour" : "hours";
+  //   const warnings = [
+  //     `The staking transaction may take up to ~${processingHours} ${processingHourLabel} to process. Funds will not be deducted instantly; a sufficient available balance must be maintained until the transaction is confirmed and the deduction is finalized.`,
+  //   ];
 
   return (
     <>
@@ -37,7 +36,7 @@ export function CreateOrderModal({ step }: Props) {
           title="You create order successfully!"
           description="Stakes activate within ~1 hour. Until then, keep the staked amount in your wallet to ensure successful processing."
           onClose={() => {
-            reset();
+            closeModal();
           }}
         />
       )}
