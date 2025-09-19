@@ -1,10 +1,11 @@
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 export const BtcStaking = () => {
   const { bech32Address } = useCosmosWallet();
+  const navigate = useNavigate();
 
   const { data: order } = useCosmwasmQuery<string>({
     contractAddress: MARKETPLACE_CONTRACT_ADDRESS,
@@ -17,12 +18,15 @@ export const BtcStaking = () => {
 
   return (
     <div>
-      <Link
-        to={`/order/${order}`}
-        className="mx-1 text-xl text-blue-500 no-underline"
+      <div
+        onClick={() => {
+          navigate(`/order/${order}`);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+        className="mx-1 cursor-pointer text-xl text-blue-500 no-underline"
       >
         My Order
-      </Link>
+      </div>
     </div>
   );
 };
