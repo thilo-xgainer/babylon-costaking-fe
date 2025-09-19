@@ -17,18 +17,11 @@ export function useOrderHistory({
   page: number;
   typeFilter: string;
 }) {
-  const queryKeys = [HISTORY_KEY, page, typeFilter];
-  if (orderAddress) {
-    queryKeys.push(orderAddress);
-  }
-  if (userAddress !== "") {
-    queryKeys.push(userAddress);
-  }
   return useClientQuery<OrderHistory>({
-    queryKey: queryKeys,
+    queryKey: [HISTORY_KEY, page, typeFilter, orderAddress, userAddress],
     queryFn: () =>
-      getOrderHistory(orderAddress ?? "", userAddress, page, 10, typeFilter),
-    enabled,
+      getOrderHistory(orderAddress, userAddress, page, 10, typeFilter),
+    enabled: enabled && !!orderAddress && !!userAddress,
     refetchInterval: ONE_MINUTE * 5,
     placeholderData: (previousData) => previousData,
   });

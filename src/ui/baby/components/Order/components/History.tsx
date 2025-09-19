@@ -1,10 +1,9 @@
-import { useOrderHistory } from "@/ui/common/hooks/client/api/useOrderHistory";
 import { useParams } from "react-router";
-import { HistoryItem } from "./HistoryItem";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useOrderHistory } from "@/ui/common/hooks/client/api/useOrderHistory";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { PaginationType } from "@/types/type";
-import { ShadcnPagination } from "../../ShadcnPagination";
 import {
   Select,
   SelectContent,
@@ -13,6 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+
+import { ShadcnPagination } from "../../ShadcnPagination";
+
+import { HistoryItem } from "./HistoryItem";
 
 type Tab = {
   id: "history" | "my_history";
@@ -68,20 +71,13 @@ export const History = () => {
   );
   const { bech32Address } = useCosmosWallet();
   const { orderAddress } = useParams();
-  const { data: histories, isLoading: isHistoryLoading } = useOrderHistory({
-    enabled: true,
+  const { data: histories } = useOrderHistory({
     orderAddress: orderAddress ?? "",
     userAddress: activeTab === "my_history" ? bech32Address : "",
     page: pagination.currentPage,
     typeFilter,
   });
-  useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      totalPage: histories ? histories.pagination.totalPages : 1,
-      totalDocument: histories ? histories.pagination.total : 1,
-    }));
-  }, [isHistoryLoading]);
+
   return (
     <div>
       <p>Histories</p>
@@ -151,8 +147,12 @@ export const History = () => {
           </div>
         </div>
       </div>
-
-      <ShadcnPagination pagination={pagination} setPagination={setPagination} />
+      {histories && (
+        <ShadcnPagination
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+      )}
     </div>
   );
 };

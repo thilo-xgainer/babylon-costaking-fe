@@ -16,11 +16,10 @@ export function usePortfolioHistory({
   page: number;
   typeFilter: string;
 }) {
-  const queryKeys = [PORTFOLIO_HISTORY_KEY, page, typeFilter, userAddress];
   return useClientQuery<OrderHistory>({
-    queryKey: queryKeys,
+    queryKey: [PORTFOLIO_HISTORY_KEY, page, typeFilter, userAddress],
     queryFn: () => getPortfolioHistory(userAddress, page, 10, typeFilter),
-    enabled,
+    enabled: enabled && !!userAddress,
     refetchInterval: ONE_MINUTE * 5,
     placeholderData: (previousData) => previousData,
   });
