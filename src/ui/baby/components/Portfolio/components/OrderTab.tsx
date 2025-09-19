@@ -20,7 +20,7 @@ export const OrderTab = () => {
           <div className="w-[7%] px-2 text-left">APR</div>
           <div className="w-[15%] px-2 text-left">BTC Amount</div>
           <div className="w-[15%] px-2 text-left">Total BABY staked</div>
-          <div className="w-[15%] px-2 text-left">My BABY staked</div>
+          <div className="w-[15%] px-2 text-left">Pending Redeem </div>
           <div className="w-[20%] px-2 text-left">Withdrawl Amount</div>
           <div className="w-[10%] px-2 text-center">Action</div>
         </div>

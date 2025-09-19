@@ -20,6 +20,8 @@ export function ActivityList() {
     closeConfirmationModal,
     delegations,
   } = useActivityDelegations();
+  console.log("🚀 ~ ActivityList ~ delegations:", delegations);
+  console.log("🚀 ~ ActivityList ~ activityData:", activityData);
 
   const {
     expansionHistoryModalOpen,

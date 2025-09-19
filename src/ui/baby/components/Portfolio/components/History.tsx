@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { PaginationType } from "@/types/type";
-import { ShadcnPagination } from "../../ShadcnPagination";
-import { HistoryItem } from "./HistoryItem";
 import { usePortfolioHistory } from "@/ui/common/hooks/client/api/usePortfolioHistory";
 import {
   Select,
@@ -12,6 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+import { EmptyIcon } from "@/ui/icons/EmptyIcon";
+
+import { ShadcnPagination } from "../../ShadcnPagination";
+
+import { HistoryItem } from "./HistoryItem";
 
 const typesFilter: {
   label: string;
@@ -47,20 +51,12 @@ export const History = () => {
     totalDocument: undefined,
   });
   const { bech32Address } = useCosmosWallet();
-  const { data: histories, isLoading: isHistoryLoading } = usePortfolioHistory({
-    enabled: true,
+  const { data: histories } = usePortfolioHistory({
     userAddress: bech32Address,
     page: pagination.currentPage,
     typeFilter,
   });
 
-  useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      totalPage: histories ? histories.pagination.totalPages : 1,
-      totalDocument: histories ? histories.pagination.total : 1,
-    }));
-  }, [isHistoryLoading]);
   return (
     <div>
       <p>Histories</p>
@@ -104,15 +100,26 @@ export const History = () => {
               <div className="w-[15%] px-2 text-right">Amount</div>
               <div className="w-[25%] px-2 text-center">TxHash</div>
             </div>
-            {(histories?.data ?? []).map((history) => (
-              <HistoryItem key={history.hash} history={history} />
-            ))}
+            {(histories?.data ?? []).length === 0 ? (
+              <div className="mt-5 flex flex-col items-center gap-6">
+                <EmptyIcon />
+                <p className="text-2xl dark:text-white">
+                  You have no pending redeem request
+                </p>
+              </div>
+            ) : (
+              (histories?.data ?? []).map((history) => (
+                <HistoryItem key={history.hash} history={history} />
+              ))
+            )}
           </div>
         </div>
-        <ShadcnPagination
-          pagination={pagination}
-          setPagination={setPagination}
-        />
+        {histories && (
+          <ShadcnPagination
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        )}
       </div>
     </div>
   );

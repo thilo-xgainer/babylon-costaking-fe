@@ -1,5 +1,7 @@
 import {
+  Dispatch,
   type PropsWithChildren,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -51,6 +53,7 @@ interface WithdrawState {
   babyPrice: number;
   redeemRequest: PendingRequest[] | undefined;
   withdrawalAmount: number | undefined;
+  manualOrderAddress: string;
   showPreview(): void;
   closePreview(): void;
   submitForm(): Promise<void>;
@@ -60,6 +63,7 @@ interface WithdrawState {
     title: string;
     message: string;
   };
+  setManualOrderAddress: Dispatch<SetStateAction<string>>;
 }
 
 const { StateProvider, useState: useWithdrawState } =
@@ -70,14 +74,17 @@ const { StateProvider, useState: useWithdrawState } =
     feeAmount: 0,
     redeemRequest: [],
     withdrawalAmount: 0,
+    manualOrderAddress: "",
     showPreview: () => {},
     closePreview: () => {},
     submitForm: async () => {},
     resetForm: () => {},
     disabled: undefined,
+    setManualOrderAddress: () => {},
   });
 
 function WithdrawState({ children }: PropsWithChildren) {
+  const [manualOrderAddress, setManualOrderAddress] = useState<string>("");
   const [step, setStep] = useState<WithdrawStep>({ name: "initial" });
   const { orderAddress } = useParams();
   const [feeAmount, setFeeAmount] = useState<number>(0);
@@ -87,25 +94,26 @@ function WithdrawState({ children }: PropsWithChildren) {
   const { bech32Address } = useCosmosWallet();
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
+  const contractAddress = orderAddress ?? manualOrderAddress;
   const { data: redeemRequest, refetch: refetchRedeemRequest } =
     useCosmwasmQuery<PendingRequest[]>({
-      contractAddress: orderAddress!,
+      contractAddress: contractAddress!,
       queryMsg: {
         get_redeem_request: {
           user: bech32Address,
         },
       },
-      options: { enabled: !!orderAddress },
+      options: { enabled: !!contractAddress },
     });
   const { data: withdrawalAmount, refetch: refetcWithdrawlAmount } =
     useCosmwasmQuery<number>({
-      contractAddress: orderAddress!,
+      contractAddress: contractAddress!,
       queryMsg: {
         get_withdrawal_amount: {
           user: bech32Address,
         },
       },
-      options: { enabled: !!orderAddress },
+      options: { enabled: !!contractAddress },
     });
 
   const isDisabled = useMemo(() => {
@@ -133,7 +141,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
       value: {
         sender: bech32Address,
-        contract: orderAddress,
+        contract: contractAddress,
         msg: toUtf8(
           JSON.stringify({
             withdraw: {},
@@ -143,7 +151,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       },
     };
     return msg;
-  }, [bech32Address, orderAddress]);
+  }, [bech32Address, contractAddress]);
 
   const submitForm = useCallback(async () => {
     if (step.name !== "preview" || !step.data) return;
@@ -159,7 +167,7 @@ function WithdrawState({ children }: PropsWithChildren) {
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
       await refetchRedeemRequest();
-      await refetcWithdrawlAmount()
+      await refetcWithdrawlAmount();
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
@@ -226,6 +234,8 @@ function WithdrawState({ children }: PropsWithChildren) {
       resetForm,
       closePreview,
       disabled: isDisabled,
+      manualOrderAddress,
+      setManualOrderAddress,
     };
   }, [
     step,
@@ -238,6 +248,8 @@ function WithdrawState({ children }: PropsWithChildren) {
     resetForm,
     closePreview,
     isDisabled,
+    manualOrderAddress,
+    setManualOrderAddress,
   ]);
 
   return <StateProvider value={context}>{children}</StateProvider>;

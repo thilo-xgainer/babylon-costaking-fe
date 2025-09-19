@@ -1,10 +1,9 @@
-import { useOrderHistory } from "@/ui/common/hooks/client/api/useOrderHistory";
 import { useParams } from "react-router";
-import { HistoryItem } from "./HistoryItem";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useOrderHistory } from "@/ui/common/hooks/client/api/useOrderHistory";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 import { PaginationType } from "@/types/type";
-import { ShadcnPagination } from "../../ShadcnPagination";
 import {
   Select,
   SelectContent,
@@ -13,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+import { EmptyIcon } from "@/ui/icons/EmptyIcon";
+import { useUserHistory } from "@/ui/common/hooks/client/useUserHistory";
+
+import { ShadcnPagination } from "../../ShadcnPagination";
+
+import { HistoryItem } from "./HistoryItem";
 
 type Tab = {
   id: "history" | "my_history";
@@ -68,20 +73,21 @@ export const History = () => {
   );
   const { bech32Address } = useCosmosWallet();
   const { orderAddress } = useParams();
-  const { data: histories, isLoading: isHistoryLoading } = useOrderHistory({
-    enabled: true,
+  const { data: histories } = useOrderHistory({
     orderAddress: orderAddress ?? "",
-    userAddress: activeTab === "my_history" ? bech32Address : "",
     page: pagination.currentPage,
     typeFilter,
+    enabled: activeTab === "history",
   });
-  useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      totalPage: histories ? histories.pagination.totalPages : 1,
-      totalDocument: histories ? histories.pagination.total : 1,
-    }));
-  }, [isHistoryLoading]);
+
+  const { data: userHistories } = useUserHistory({
+    userAddress: bech32Address,
+    orderAddress: orderAddress ?? "",
+    page: pagination.currentPage,
+    typeFilter,
+    enabled: activeTab === "my_history" && !!bech32Address,
+  });
+
   return (
     <div>
       <p>Histories</p>
@@ -94,10 +100,11 @@ export const History = () => {
                 onClick={() => {
                   if (activeTab !== tab.id) {
                     setActiveTab(tab.id);
-                    setPagination((prev) => ({
-                      ...prev,
+                    setPagination({
                       currentPage: 1,
-                    }));
+                      totalPage: 1,
+                      totalDocument: undefined,
+                    });
                   }
                 }}
               >
@@ -145,14 +152,31 @@ export const History = () => {
               <div className="w-[15%] px-2 text-right">Amount</div>
               <div className="w-[25%] px-2 text-center">TxHash</div>
             </div>
-            {(histories?.data ?? []).map((history) => (
-              <HistoryItem key={history.hash} history={history} />
-            ))}
+            {(
+              (activeTab === "history"
+                ? histories?.data
+                : userHistories?.data) ?? []
+            ).length === 0 ? (
+              <div className="mt-5 flex flex-col items-center gap-6">
+                <EmptyIcon />
+                <p className="text-2xl dark:text-white">
+                  You have no pending redeem request
+                </p>
+              </div>
+            ) : (
+              (histories?.data ?? []).map((history) => (
+                <HistoryItem key={history.hash} history={history} />
+              ))
+            )}
           </div>
         </div>
+        {histories && (
+          <ShadcnPagination
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        )}
       </div>
-
-      <ShadcnPagination pagination={pagination} setPagination={setPagination} />
     </div>
   );
 };
