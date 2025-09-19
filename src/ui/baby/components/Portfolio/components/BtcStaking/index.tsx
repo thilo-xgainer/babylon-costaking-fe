@@ -1,23 +1,9 @@
 import babyLogo from "@/ui/common/assets/baby-token.svg";
 import btcLogo from "@/ui/common/assets/bitcoin.png";
-import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
-import { formatAddress } from "@/utils/format";
 import { Delegations } from "@/ui/common/components/Delegations/Delegations";
 import { ActivityList } from "@/ui/common/components/Activity/components/ActivityList";
 
 export const BtcStaking = () => {
-  const { bech32Address } = useCosmosWallet();
-
-  const { data: order } = useCosmwasmQuery<string>({
-    contractAddress: MARKETPLACE_CONTRACT_ADDRESS,
-    queryMsg: {
-      get_order_from_owner: {
-        owner: bech32Address,
-      },
-    },
-  });
   return (
     <div>
       <a
