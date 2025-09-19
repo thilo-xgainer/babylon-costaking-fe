@@ -19,7 +19,6 @@ import { useEstimateEpoch } from "../../hooks/services/useEstimateEpoch";
 
 import { Information } from "./components/Infomation";
 import { CalculatedYield } from "./components/CalculatedYield";
-import { Rewards as RewardsSection } from "./components/Rewards";
 import { StakeInfo } from "./components/StakeInfo";
 import { History } from "./components/History";
 
@@ -112,7 +111,7 @@ function OrderContent() {
           )}
         </div>
         <CalculatedYield />
-        <RewardsSection />
+        {/* <RewardsSection /> */}
         <StakeInfo />
         <Tabs
           items={tabItems}

@@ -59,6 +59,7 @@ interface RedeemState {
   formSchema: any;
   step: RedeemStep;
   availableBalance: number;
+  displayBalance: number;
   babyPrice: number;
   fields: string[];
   exchangeRate: number;
@@ -81,6 +82,7 @@ const { StateProvider, useState: useRedeemState } =
     formSchema: null,
     step: { name: "initial" },
     availableBalance: 0,
+    displayBalance: 0,
     babyPrice: 0,
     fields: [],
     exchangeRate: 0,
@@ -104,7 +106,7 @@ function RedeemState({ children }: PropsWithChildren) {
   const { bech32Address } = useCosmosWallet();
 
   const contractAddress = orderAddress ?? manualOrderAddress;
-  const { data: stakedAmount = 0, refetch: refetchStakedAmount } =
+  const { data: stakedAmount = 0 } =
     useCosmwasmQuery({
       contractAddress: contractAddress!,
       queryMsg: {
@@ -114,6 +116,18 @@ function RedeemState({ children }: PropsWithChildren) {
       },
       options: { enabled: !!contractAddress },
     });
+  const {
+    data: availableRedeemAmount = 0,
+    refetch: refetchAvailableRedeemAmount,
+  } = useCosmwasmQuery({
+    contractAddress: contractAddress!,
+    queryMsg: {
+      get_redeemable_amount: {
+        user: bech32Address,
+      },
+    },
+    options: { enabled: !!contractAddress },
+  });
   const { data: exchangeRate } = useCosmwasmQuery({
     contractAddress: contractAddress!,
     queryMsg: {
@@ -121,7 +135,6 @@ function RedeemState({ children }: PropsWithChildren) {
     },
     options: { enabled: !!contractAddress },
   });
-
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
 
@@ -129,9 +142,9 @@ function RedeemState({ children }: PropsWithChildren) {
     () => createMinAmountValidator(MIN_STAKING_AMOUNT),
     [],
   );
+  console.log(stakedAmount, availableRedeemAmount)
   // Subtract the pending stake amount from the balance
-  const availableBalance = stakedAmount;
-
+  const availableBalance = BigInt(availableRedeemAmount ?? 0);
   const isDisabled = useMemo(() => {
     if (isGeoBlocked) {
       return {
@@ -151,8 +164,8 @@ function RedeemState({ children }: PropsWithChildren) {
             .typeError("Redeem amount must be a valid number")
             .required("Enter BABY Amount to Redeem")
             .moreThan(0, "Redeem amount must be greater than 0")
-            .lessThan(
-              stakedAmount + 1,
+            .max(
+              babylon.utils.ubbnToBaby(availableBalance),
               "Redeem amount must be less than staked amount",
             )
             .test(
@@ -181,7 +194,7 @@ function RedeemState({ children }: PropsWithChildren) {
             ),
         },
       ] as const,
-    [availableBalance, minAmountValidator, stakedAmount],
+    [availableBalance, minAmountValidator, availableRedeemAmount],
   );
 
   const formSchema = useMemo(() => {
@@ -248,7 +261,7 @@ function RedeemState({ children }: PropsWithChildren) {
         txHash: result?.transactionHash,
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
-      await refetchStakedAmount();
+      await refetchAvailableRedeemAmount();
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
@@ -261,7 +274,7 @@ function RedeemState({ children }: PropsWithChildren) {
     sendBbnTx,
     signBbnTx,
     createRedeemMsg,
-    refetchStakedAmount,
+    refetchAvailableRedeemAmount,
   ]);
 
   const calculateFee = useCallback(
@@ -283,18 +296,19 @@ function RedeemState({ children }: PropsWithChildren) {
   );
 
   useEffect(() => {
-    refetchStakedAmount();
-  }, [bech32Address, refetchStakedAmount]);
+    refetchAvailableRedeemAmount();
+  }, [bech32Address, refetchAvailableRedeemAmount]);
 
   const resetForm = useCallback(() => {
     setStep({ name: "initial" });
   }, []);
 
   const context = useMemo(() => {
-    const displayBalance = babylon.utils.ubbnToBaby(availableBalance);
+    const displayBalance = babylon.utils.ubbnToBaby(availableBalance) * Number(exchangeRate || 1);
     return {
       step,
-      availableBalance: displayBalance,
+      displayBalance,
+      availableBalance: babylon.utils.ubbnToBaby(availableBalance),
       formSchema,
       fields,
       babyPrice,

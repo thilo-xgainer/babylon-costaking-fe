@@ -28,6 +28,7 @@ import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnT
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
 
 import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 const MIN_STAKING_AMOUNT = 0.01;
 
@@ -98,7 +99,24 @@ function StakingState({ children }: PropsWithChildren) {
   const { bech32Address } = useCosmosWallet();
   const logger = useLogger();
   const babyPrice = usePrice("BABY");
-
+  const { refetch: refetchAvailableRedeemAmount } = useCosmwasmQuery({
+    contractAddress: orderAddress!,
+    queryMsg: {
+      get_redeemable_amount: {
+        user: bech32Address,
+      },
+    },
+    options: { enabled: !!orderAddress },
+  });
+  const { refetch: refetchStakedAmount } = useCosmwasmQuery({
+    contractAddress: orderAddress!,
+    queryMsg: {
+      get_user_staked: {
+        user: bech32Address,
+      },
+    },
+    options: { enabled: !!orderAddress },
+  });
   const minAmountValidator = useMemo(
     () => createMinAmountValidator(MIN_STAKING_AMOUNT),
     [],
@@ -233,6 +251,8 @@ function StakingState({ children }: PropsWithChildren) {
       });
       setStep({ name: "success", data: { txHash: result?.transactionHash } });
       refetchBalance();
+      refetchAvailableRedeemAmount();
+      refetchStakedAmount();
     } catch (error: any) {
       handleError({ error });
       logger.error(error);
