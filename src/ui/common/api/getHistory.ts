@@ -6,7 +6,7 @@ export type HistoryItemType = {
   user: string;
   order: string;
   height: number;
-  baby_deposit_amount: string;
+  amount: string;
   user_deposit_increased: string;
   createdAt: string;
   updatedAt: string;
@@ -31,9 +31,10 @@ export const getOrderHistory = async (
   userAddress: string,
   page: number,
   limit: number,
+  typeFilter: string,
 ): Promise<OrderHistory> => {
   const response = await fetch(
-    `${API_END_POINT}/history/order/${orderAddress}?page=${page}&limit=${limit}${userAddress !== "" ? `&user=${userAddress}` : ""}`,
+    `${API_END_POINT}/history/order/${orderAddress}?page=${page}&limit=${limit}${typeFilter !== "all" ? `&type=${typeFilter}` : ""}${userAddress !== "" ? `&user=${userAddress}` : ""}`,
   );
   const data = await response.json();
   return data;
