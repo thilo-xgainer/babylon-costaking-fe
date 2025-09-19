@@ -7,6 +7,7 @@ import { Information } from "./components/Information";
 import { MyAssets } from "./components/MyAssets";
 import { OrderTab } from "./components/OrderTab";
 import { BtcStaking } from "./components/BtcStaking";
+import { History } from "./components/History";
 
 type TabId = "baby" | "btc";
 
@@ -20,6 +21,11 @@ const tabItems = [
     id: "btc",
     label: "Bitcoin",
     content: <BtcStaking />,
+  },
+  {
+    id: "history",
+    label: "My Transaction",
+    content: <History />,
   },
 ];
 export const PortfolioPage = () => {
