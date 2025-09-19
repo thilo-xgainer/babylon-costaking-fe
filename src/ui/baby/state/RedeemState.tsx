@@ -106,16 +106,16 @@ function RedeemState({ children }: PropsWithChildren) {
   const { bech32Address } = useCosmosWallet();
 
   const contractAddress = orderAddress ?? manualOrderAddress;
-  const { data: stakedAmount = 0 } =
-    useCosmwasmQuery({
-      contractAddress: contractAddress!,
-      queryMsg: {
-        get_user_staked: {
-          user: bech32Address,
-        },
-      },
-      options: { enabled: !!contractAddress },
-    });
+  // const { data: stakedAmount = 0 } =
+  //   useCosmwasmQuery({
+  //     contractAddress: contractAddress!,
+  //     queryMsg: {
+  //       get_user_staked: {
+  //         user: bech32Address,
+  //       },
+  //     },
+  //     options: { enabled: !!contractAddress },
+  //   });
   const {
     data: availableRedeemAmount = 0,
     refetch: refetchAvailableRedeemAmount,
