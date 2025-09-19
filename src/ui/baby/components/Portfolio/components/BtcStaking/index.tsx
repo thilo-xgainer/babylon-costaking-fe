@@ -21,7 +21,7 @@ export const BtcStaking = () => {
         to={`/order/${order}`}
         className="mx-1 text-xl text-blue-500 no-underline"
       >
-        Your Order
+        My Order
       </Link>
     </div>
   );

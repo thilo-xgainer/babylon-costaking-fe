@@ -19,7 +19,7 @@ const tabItems = [
   },
   {
     id: "btc",
-    label: "Your Order",
+    label: "My Order",
     content: <BtcStaking />,
   },
   {
