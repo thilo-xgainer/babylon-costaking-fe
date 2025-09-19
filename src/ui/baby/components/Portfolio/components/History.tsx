@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+import { EmptyIcon } from "@/ui/icons/EmptyIcon";
 
 import { ShadcnPagination } from "../../ShadcnPagination";
 
@@ -99,9 +100,18 @@ export const History = () => {
               <div className="w-[15%] px-2 text-right">Amount</div>
               <div className="w-[25%] px-2 text-center">TxHash</div>
             </div>
-            {(histories?.data ?? []).map((history) => (
-              <HistoryItem key={history.hash} history={history} />
-            ))}
+            {(histories?.data ?? []).length === 0 ? (
+              <div className="mt-5 flex flex-col items-center gap-6">
+                <EmptyIcon />
+                <p className="text-2xl dark:text-white">
+                  You have no pending redeem request
+                </p>
+              </div>
+            ) : (
+              (histories?.data ?? []).map((history) => (
+                <HistoryItem key={history.hash} history={history} />
+              ))
+            )}
           </div>
         </div>
         {histories && (

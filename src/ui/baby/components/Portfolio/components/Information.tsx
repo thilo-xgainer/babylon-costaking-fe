@@ -69,7 +69,7 @@ export const Information = () => {
             <button
               className="cursor-pointer p-2 hover:bg-[#f1f1f1]"
               onClick={() => {
-                handleCoppy("btc");
+                handleCoppy("baby");
               }}
             >
               <CopyIcon />

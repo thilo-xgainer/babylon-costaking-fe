@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/common/components/Select";
+import { EmptyIcon } from "@/ui/icons/EmptyIcon";
 import { useUserHistory } from "@/ui/common/hooks/client/useUserHistory";
 
 import { ShadcnPagination } from "../../ShadcnPagination";
@@ -155,18 +156,27 @@ export const History = () => {
               (activeTab === "history"
                 ? histories?.data
                 : userHistories?.data) ?? []
-            ).map((history) => (
-              <HistoryItem key={history.hash} history={history} />
-            ))}
+            ).length === 0 ? (
+              <div className="mt-5 flex flex-col items-center gap-6">
+                <EmptyIcon />
+                <p className="text-2xl dark:text-white">
+                  You have no pending redeem request
+                </p>
+              </div>
+            ) : (
+              (histories?.data ?? []).map((history) => (
+                <HistoryItem key={history.hash} history={history} />
+              ))
+            )}
           </div>
         </div>
+        {histories && (
+          <ShadcnPagination
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        )}
       </div>
-      {histories && (
-        <ShadcnPagination
-          pagination={pagination}
-          setPagination={setPagination}
-        />
-      )}
     </div>
   );
 };

@@ -1,8 +1,5 @@
 import { useNavigate } from "react-router";
 
-import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
-import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
-import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 export const BtcStaking = () => {
   const { bech32Address } = useCosmosWallet();
   const navigate = useNavigate();
