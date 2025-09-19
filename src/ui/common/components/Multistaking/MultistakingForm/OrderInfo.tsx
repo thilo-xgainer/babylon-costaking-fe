@@ -65,7 +65,12 @@ export const OrderInfo = () => {
 
   return (
     <div className="bg-[#f9f9f9] p-4 dark:bg-[#252525]">
-      <CreateOrderModal step={step} />
+      <CreateOrderModal
+        step={step}
+        closeModal={() => {
+          setStep({ name: "initial" });
+        }}
+      />
 
       <p>Your Order</p>
       {order ? (
