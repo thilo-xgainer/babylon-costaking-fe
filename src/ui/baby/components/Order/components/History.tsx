@@ -96,6 +96,7 @@ export const History = () => {
           <div className="flex items-center justify-start gap-2">
             {tabs.map((tab) => (
               <div
+                key={tab.id}
                 className={`cursor-pointer px-4 py-2 ${activeTab === tab.id ? "bg-[#2c6f8a] text-white" : "bg-[#e0e0e0] hover:opacity-80"}`}
                 onClick={() => {
                   if (activeTab !== tab.id) {
@@ -164,7 +165,11 @@ export const History = () => {
                 </p>
               </div>
             ) : (
-              (histories?.data ?? []).map((history) => (
+              (
+                (activeTab === "history"
+                  ? histories?.data
+                  : userHistories?.data) ?? []
+              ).map((history) => (
                 <HistoryItem key={history.hash} history={history} />
               ))
             )}

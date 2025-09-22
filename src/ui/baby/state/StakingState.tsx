@@ -26,9 +26,9 @@ import { useHealthCheck } from "@/ui/common/hooks/useHealthCheck";
 import { GEO_BLOCK_MESSAGE } from "@/ui/common/types/services/healthCheck";
 import { useBbnTransaction } from "@/ui/common/hooks/client/rpc/mutation/useBbnTransaction";
 import { useCosmosWallet } from "@/ui/common/context/wallet/CosmosWalletProvider";
+import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 import { usePendingOperationsService } from "../hooks/services/usePendingOperationsService";
-import { useCosmwasmQuery } from "@/ui/common/hooks/client/useCosmwasmQuery";
 
 const MIN_STAKING_AMOUNT = 0.01;
 
@@ -259,13 +259,16 @@ function StakingState({ children }: PropsWithChildren) {
       setStep({ name: "initial" });
     }
   }, [
-    step,
-    logger,
-    handleError,
+    step.name,
+    step.data,
+    createStakeMsg,
     sendBbnTx,
     signBbnTx,
-    createStakeMsg,
+    logger,
     refetchBalance,
+    refetchAvailableRedeemAmount,
+    refetchStakedAmount,
+    handleError,
   ]);
 
   const calculateFee = useCallback(

@@ -152,7 +152,6 @@ function RedeemState({ children }: PropsWithChildren) {
       };
     }
   }, [isGeoBlocked]);
-  console.log("availableBalance", babylon.utils.ubbnToBaby(availableBalance))
   const fieldSchemas = useMemo(
     () =>
       [
@@ -193,7 +192,7 @@ function RedeemState({ children }: PropsWithChildren) {
             ),
         },
       ] as const,
-    [availableBalance, minAmountValidator, availableRedeemAmount],
+    [availableBalance, minAmountValidator],
   );
 
   const formSchema = useMemo(() => {
@@ -303,7 +302,8 @@ function RedeemState({ children }: PropsWithChildren) {
   }, []);
 
   const context = useMemo(() => {
-    const displayBalance = babylon.utils.ubbnToBaby(availableBalance) * Number(exchangeRate || 1);
+    const displayBalance =
+      babylon.utils.ubbnToBaby(availableBalance) * Number(exchangeRate || 1);
     return {
       step,
       displayBalance,
