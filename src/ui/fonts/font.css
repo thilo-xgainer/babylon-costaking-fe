@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: Dmsans;
+    src: local("DMSans-Variable"), url("../fonts/fonts-list/DMSans-Variable.ttf") format("trueType");
+}
+
+@font-face {
+    font-family: Inter;
+    src:local("Inter-VariableFont"),  url("../fonts/fonts-list/Inter-VariableFont.ttf") format("trueType");
+}
+
+@font-face {
+    font-family: Lato;
+    src:local("Lato-Regular"),  url("../fonts/fonts-list/Lato-Regular.ttf") format("trueType");
+}
+
+@font-face {
+    font-family: Manrope;
+    src:local("Manrope-Variable"),  url("../fonts/fonts-list/Manrope-Variable.ttf") format("trueType");
+}
+
+@font-face {
+    font-family: Popins;
+    src:local("Poppins-Regular"),  url("../fonts/fonts-list/Poppins-Regular.ttf") format("trueType");
+}
+
+@font-face {
+    font-family: Rubik;
+    src:local("Rubik-VariableFont"),  url("../fonts/fonts-list/Rubik-VariableFont.ttf") format("trueType");
+}
+

@@ -44,9 +44,9 @@ export const Header = () => {
         {FF.IsBabyStakingEnabled && !isMobileView && (
           <div className="absolute left-1/2 -translate-x-1/2 transform">
             <Nav>
-              <NavItem title="BTC Staking" to="/btc" />
-              <NavItem title="Order" to="/order" />
-              <NavItem title="Portfolio" to="/portfolio"/>
+              <NavItem title="BTCFi" to="/btc" />
+              <NavItem title="Marketplace" to="/order" />
+              <NavItem title="Portfolio" to="/portfolio" />
             </Nav>
           </div>
         )}

@@ -1,5 +1,5 @@
-import { CreateOrderModal } from "@/ui/baby/components/CreateOrderModal";
-
+import { TransactionStep } from "@/types/type";
+import { ProgressModal } from "@/ui/baby/components/ProgressModal";
 
 import { useValidatorState } from "@/ui/baby/state/ValidatorState";
 import { MARKETPLACE_CONTRACT_ADDRESS } from "@/ui/common/constants";
@@ -13,11 +13,13 @@ import { toUtf8 } from "@cosmjs/encoding";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-
 export const OrderInfo = () => {
   const { bech32Address } = useCosmosWallet();
   const { validators } = useValidatorState();
-  const [step, setStep] = useState<any>(``);
+  const [step, setStep] = useState<TransactionStep>({
+    name: "init",
+    txHash: "",
+  });
 
   const { sendBbnTx, signBbnTx } = useBbnTransaction();
   const { data: order, refetch: refetchOrder } = useCosmwasmQuery<string>({
@@ -31,7 +33,10 @@ export const OrderInfo = () => {
 
   const handlerCreateOrder = async () => {
     try {
-      setStep({ name: "signing" });
+      setStep((prev) => ({
+        ...prev,
+        name: "signing",
+      }));
       const createOrderMsg: MsgExecuteContractEncodeObject = {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: {
@@ -47,28 +52,48 @@ export const OrderInfo = () => {
           funds: [],
         },
       };
-      setStep({ name: "loading" });
+      setStep((prev) => ({
+        ...prev,
+        name: "progressing",
+      }));
       const result = await sendBbnTx(await signBbnTx(createOrderMsg));
 
-      setStep({ name: "success", data: { txHash: result?.transactionHash } });
+      setStep((prev) => ({
+        ...prev,
+        name: "success",
+        txHash: result?.transactionHash,
+      }));
 
       toast.success("Create order complete");
 
       await refetchOrder();
     } catch (error) {
       console.log("error", error);
-      setStep({ name: "error" });
+      setStep((prev) => ({
+        ...prev,
+        name: "error",
+      }));
     }
+  };
+
+  const handleCloseModal = () => {
+    setStep((prev) => ({
+      ...prev,
+      name: "init",
+      txHash: "",
+    }));
   };
 
   return (
     <div className="bg-[#f9f9f9] p-4 dark:bg-[#252525]">
-      <CreateOrderModal
-        step={step}
-        closeModal={() => {
-          setStep({ name: "initial" });
-        }}
-      />
+      {step.name !== "init" ? (
+        <ProgressModal
+          step={step}
+          closeModal={handleCloseModal}
+          isFunding={false}
+          tryAgain={handlerCreateOrder}
+        />
+      ) : null}
 
       <p>Your Order</p>
       {order ? (

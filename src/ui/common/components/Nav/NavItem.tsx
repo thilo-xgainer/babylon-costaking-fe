@@ -12,8 +12,10 @@ export const NavItem = ({ title, to }: NavItemProps) => {
       to={to}
       className={({ isActive }) =>
         twJoin(
-          "flex h-10 w-32 items-center justify-center whitespace-nowrap text-center",
-          isActive ? "text-accent-primary" : "text-accent-secondary",
+          "flex h-10 items-center justify-center whitespace-nowrap px-2 text-center text-sm",
+          isActive
+            ? "border-b-[2px] border-[#125497] font-bold text-[#125497]"
+            : "text-[#8DA5BF] hover:text-[#125497]",
         )
       }
     >

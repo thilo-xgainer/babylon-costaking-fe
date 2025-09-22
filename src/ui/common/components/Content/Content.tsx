@@ -5,7 +5,12 @@ export const Content = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => (
-  <main className={twMerge("w-full md:mx-auto md:max-w-3xl", className)}>
+  <main
+    className={twMerge(
+      "mx-auto dark:bg-[#15202B] max-lg:w-full md:mx-auto lg:w-[1010px]",
+      className,
+    )}
+  >
     {children}
   </main>
 );

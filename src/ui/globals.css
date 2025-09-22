@@ -1,8 +1,9 @@
+@import "setting.css";
+/* @import "./fonts/font.css"; */
 @import "react-tooltip/dist/react-tooltip.css";
 @import "react-toastify/dist/ReactToastify.css";
 @import "@babylonlabs-io/core-ui/style.css";
 @import "@babylonlabs-io/wallet-connector/style.css";
-@import "./setting.css";
 
 @tailwind base;
 @tailwind components;

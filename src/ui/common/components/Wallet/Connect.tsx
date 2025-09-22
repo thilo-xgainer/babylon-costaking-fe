@@ -1,7 +1,7 @@
 import {
   Avatar,
   AvatarGroup,
-  Button,
+  // Button,
   WalletMenu,
 } from "@babylonlabs-io/core-ui";
 import {
@@ -145,16 +145,14 @@ export const Connect: React.FC<ConnectProps> = ({
   if (!isConnected) {
     return (
       <div className="flex items-center gap-2">
-        <Button
-          size="large"
-          color="secondary"
-          className="h-[2.5rem] min-h-[2.5rem] rounded-full px-6 py-2 text-base text-white md:rounded"
+        <button
+          className="h-10 rounded-[8px] bg-[#1669BB] px-3.5 text-sm font-normal text-[#FDFEFE] hover:bg-[#5FA6EC] dark:bg-[#125497] dark:hover:bg-[#2987E6]"
           onClick={onConnect}
           disabled={isLoading}
         >
           <PiWalletBold size={20} className="flex md:hidden" />
           <span className="hidden md:flex">Connect Wallets</span>
-        </Button>
+        </button>
 
         <SettingMenuWrapper />
       </div>
